@@ -57,7 +57,7 @@ As a designer reviewing audit results, I need to click on any discovered text la
 **Acceptance Scenarios**:
 
 1. **Given** audit results displayed, **When** user clicks on a text layer entry, **Then** Figma focuses that layer in the canvas and layer tree
-2. **Given** a hidden text layer in results, **When** user clicks on it, **Then** Figma navigates to the layer and temporarily reveals it for editing
+2. **Given** a hidden text layer in results, **When** user clicks on it, **Then** Figma navigates to the layer and reveals it while focused (layer remains visible until user clicks elsewhere or navigates away, then returns to hidden state)
 3. **Given** text in a nested component instance, **When** user clicks on it, **Then** Figma expands the component hierarchy and focuses the text layer
 
 ---
@@ -96,13 +96,25 @@ As a design system maintainer, I need to export the audit results as a PDF repor
 
 ---
 
+## Clarifications
+
+### Session 2025-11-16
+
+- Q: How should the plugin handle text layer content and audit data from a privacy/storage perspective? → A: All processing in-memory only; no data persisted outside Figma; export only on explicit user action (PDF/CSV)
+- Q: Which properties should be included in the similarity calculation and how should they be weighted? → A: Weighted: font family (30%), size (30%), weight (20%), line height (15%), color (5%) - prioritizes typography over color
+- Q: What is the maximum number of text layers the plugin should support before displaying a performance warning or limitation? → A: Hard limit: 10,000 layers maximum - display error and suggest splitting file if exceeded
+- Q: How should the plugin handle Figma API rate limiting or temporary failures during an audit? → A: Retry with backoff: Attempt up to 3 retries with exponential backoff (1s, 2s, 4s) before failing; continue audit for successful nodes
+- Q: What does "temporarily reveals" mean for hidden layer navigation? → A: Focus-based: Reveal while layer is selected/focused; hide when user clicks elsewhere or navigates away
+
+---
+
 ### Edge Cases
 
 - What happens when a text layer has mixed font properties (multiple fonts in one text block)? System should capture the primary/first font and flag as "mixed fonts" if multiple fonts detected.
 - How does the system handle corrupted or inaccessible text nodes? Display error indicator in results with message "Unable to read layer properties" and continue audit.
 - What happens when user runs audit on an empty selection or file with no text? Display empty state message: "No text layers found. Try selecting frames with text or running on the entire page."
-- How does the system handle extremely large files (5000+ text layers)? Implement incremental loading (display results in batches of 500) with progress indicator.
-- What happens when Figma API changes or text properties are unavailable? Gracefully degrade by showing available metadata and logging warning for missing properties.
+- How does the system handle extremely large files (5000+ text layers)? Implement incremental loading (display results in batches of 500) with progress indicator. If file contains >10,000 text layers, display error message: "File too large (X layers detected). Maximum supported: 10,000 layers. Please audit a smaller selection or split into multiple files."
+- What happens when Figma API rate limits are hit or temporary failures occur? Implement retry logic with exponential backoff (3 retries at 1s, 2s, 4s intervals). If all retries fail, mark the node as "Unable to read layer properties" and continue audit. If text properties are unavailable after retries, gracefully degrade by showing available metadata and logging warning for missing properties.
 - What happens when a text layer has a detached or deleted text style? Display "Detached style" or "Missing style" indicator and capture the last known style name if available.
 - How does the system handle text styles from external libraries that are unavailable? Display library name with "unavailable" indicator and show captured style properties.
 - What happens when multiple text styles have 80%+ similarity to unstyled text? Display all matches ranked by similarity percentage (highest first) with maximum of 5 suggestions.
@@ -116,7 +128,7 @@ As a design system maintainer, I need to export the audit results as a PDF repor
 - **FR-002**: System MUST capture font family, weight, size, line height, color (hex/rgba), opacity, parent type, component path, override status, visibility state, and text style information for each text layer
 - **FR-003**: System MUST detect and capture text style assignments including full style name and library source (e.g., "Body/Large" from "Core Design System")
 - **FR-004**: System MUST identify partial style matches where text properties partially match a text style, and indicate which properties match vs differ
-- **FR-005**: System MUST suggest close style matches for unstyled text (80%+ property similarity) and rank suggestions by similarity percentage
+- **FR-005**: System MUST suggest close style matches for unstyled text (80%+ property similarity calculated using weighted formula: font family 30%, size 30%, weight 20%, line height 15%, color 5%) and rank suggestions by similarity percentage
 - **FR-006**: System MUST identify and distinguish between main component text, instance text, and plain text layers
 - **FR-007**: System MUST detect and flag hidden text layers with clear visual indicator (e.g., opacity styling or "hidden" badge)
 - **FR-008**: System MUST display results in hierarchical views supporting multiple grouping options: by font family → weight → size, by text style → library → usage, and by style compliance (styled/unstyled/partially styled)
@@ -125,15 +137,23 @@ As a design system maintainer, I need to export the audit results as a PDF repor
 - **FR-011**: System MUST complete audit of 1000 text layers in <10 seconds including text style analysis and similarity calculations
 - **FR-012**: System MUST display progress indicator for operations exceeding 2 seconds
 - **FR-013**: System MUST generate PDF export containing summary metrics, text style coverage analysis, font inventory table, text style usage by library, unstyled text analysis, partial style matches, close match suggestions, component analysis, override analysis, hidden text inventory, and timestamp
-- **FR-014**: System MUST handle corrupted or inaccessible nodes gracefully without stopping the audit
+- **FR-014**: System MUST handle corrupted or inaccessible nodes gracefully without stopping the audit, implementing retry logic with exponential backoff (up to 3 retries at 1s, 2s, 4s intervals) for API failures before marking node as failed
 - **FR-015**: System MUST display summary dashboard showing total unique fonts, total text layers analyzed, text style coverage percentage (styled vs unstyled), libraries in use count, potential style matches found, component coverage stats, and scan timestamp
 - **FR-016**: System MUST display visual indicators for text style assignment status (styled/unstyled/partial match), library source badges, partial match warnings, and close match suggestions
+- **FR-017**: System MUST validate text layer count before processing and display error message if selection contains >10,000 text layers, suggesting user audit a smaller selection or split the file
+
+### Non-Functional Requirements
+
+**Security & Privacy:**
+- **NFR-001**: System MUST process all audit data in-memory only with no persistent storage outside Figma's native storage
+- **NFR-002**: System MUST only export data (PDF/CSV) on explicit user action
+- **NFR-003**: System MUST NOT transmit text content or audit data to external servers
 
 ### Key Entities
 
 - **Text Layer**: Represents a single text node in Figma with properties: font family, weight, size, line height, color, opacity, content preview (first 50 chars), node ID, parent node reference, text style assignment (if any)
 - **Text Style Assignment**: Information about applied text style including: style name, library source name, assignment status (fully styled/partially styled/unstyled), property match details (which properties match/differ from style definition)
-- **Style Match Suggestion**: Recommended text style for unstyled text including: suggested style name, library source, similarity percentage (80-100%), property comparison (matching and differing properties)
+- **Style Match Suggestion**: Recommended text style for unstyled text including: suggested style name, library source, similarity percentage (80-100% calculated using weighted formula: font family 30%, size 30%, weight 20%, line height 15%, color 5%), property comparison (matching and differing properties)
 - **Component Context**: Metadata describing the component hierarchy: component type (main/instance/plain), component path (breadcrumb), override status (default/overridden/detached), visibility state (visible/hidden)
 - **Audit Result**: Collection of discovered text layers with metadata, organized hierarchically with multiple view options (font family → weight → size, text style → library → usage, compliance status), including summary statistics (unique font count, total layers, style coverage percentage, libraries in use, potential matches count, scan timestamp, file name)
 - **Font Group**: Aggregation of text layers sharing the same font family and weight, used for hierarchical display and grouping logic
@@ -161,13 +181,14 @@ As a design system maintainer, I need to export the audit results as a PDF repor
 - Users run audits on files they have read access to (no permission errors expected)
 - Text style information is accessible through Figma Plugin API for all styles in use
 - PDF export uses standard jsPDF library with acceptable file size (<5MB for typical audits)
-- Most audit runs will analyze between 50-2000 text layers (typical design file scope)
+- Most audit runs will analyze between 50-2000 text layers (typical design file scope), with hard limit at 10,000 layers
 - Users access the plugin from Figma desktop app or web browser (not mobile)
 - Font metadata available through Figma Plugin API is sufficient (no need for external font APIs)
 - Text color captured as hex/rgba is sufficient (no special color space requirements)
 - Files using text styles typically have 1-10 libraries enabled with 20-100 text styles total
-- Similarity calculation at 80%+ threshold using property matching provides useful style suggestions
+- Weighted similarity calculation (font family 30%, size 30%, weight 20%, line height 15%, color 5%) at 80%+ threshold provides useful style suggestions
 - Users understand text style concepts and the difference between styled and unstyled text
+- Audit data retention is not required between plugin sessions (in-memory processing only)
 
 ## Future Scope (Out of v1.0)
 
