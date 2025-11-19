@@ -44,17 +44,17 @@ This is a Figma plugin with dual-context architecture:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T009 [P] Define shared type definitions in src/shared/types.ts: TextLayerData, StyleAssignment, ComponentContext, LineHeight, RGBA
-- [ ] T010 [P] Define message protocol types in src/shared/types.ts: UIToMainMessage, MainToUIMessage unions
-- [ ] T011 [P] Define AuditResult and AuditSummary types in src/shared/types.ts
-- [ ] T012 [P] Define StyleMatchSuggestion and PropertyMatchMap types in src/shared/types.ts
-- [ ] T013 Create main entry point skeleton in src/main/code.ts with postMessage handler structure
-- [ ] T014 Create UI entry point skeleton in src/ui/App.tsx with React root and message listener
-- [ ] T015 Implement useMessageHandler hook in src/ui/hooks/useMessageHandler.ts for main-to-UI messages
-- [ ] T016 Implement useAuditState hook in src/ui/hooks/useAuditState.ts for audit state management
-- [ ] T017 [P] Setup global CSS with Figma Plugin DS tokens in src/ui/styles/globals.css
-- [ ] T018 [P] Create utility for building component hierarchy paths in src/main/utils/hierarchy.ts
-- [ ] T019 [P] Create exponential backoff retry utility in src/main/utils/retry.ts (1s, 2s, 4s intervals per FR-014)
+- [x] T009 [P] Define shared type definitions in src/shared/types.ts: TextLayerData, StyleAssignment, ComponentContext, LineHeight, RGBA
+- [x] T010 [P] Define message protocol types in src/shared/types.ts: UIToMainMessage, MainToUIMessage unions
+- [x] T011 [P] Define AuditResult and AuditSummary types in src/shared/types.ts
+- [x] T012 [P] Define StyleMatchSuggestion and PropertyMatchMap types in src/shared/types.ts
+- [x] T013 Create main entry point skeleton in src/main/code.ts with postMessage handler structure
+- [x] T014 Create UI entry point skeleton in src/ui/App.tsx with React root and message listener
+- [x] T015 Implement useMessageHandler hook in src/ui/hooks/useMessageHandler.ts for main-to-UI messages
+- [x] T016 Implement useAuditState hook in src/ui/hooks/useAuditState.ts for audit state management
+- [x] T017 [P] Setup global CSS with Figma Plugin DS tokens in src/ui/styles/globals.css
+- [x] T018 [P] Create utility for building component hierarchy paths in src/main/utils/hierarchy.ts
+- [x] T019 [P] Create exponential backoff retry utility in src/main/utils/retry.ts (1s, 2s, 4s intervals per FR-014)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
