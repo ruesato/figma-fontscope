@@ -27,14 +27,14 @@ This is a Figma plugin with dual-context architecture:
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Initialize Figma plugin project using `npx create-figma-plugin` with TypeScript and React
-- [ ] T002 [P] Configure package.json with dependencies: Figma Plugin DS, Tailwind CSS, jsPDF, Papa Parse
-- [ ] T003 [P] Setup Tailwind CSS configuration in tailwind.config.js with Figma Plugin DS token mapping
-- [ ] T004 [P] Configure Vite build for dual-context plugin in vite.config.ts
-- [ ] T005 [P] Setup ESLint and Prettier configuration files (.eslintrc.js, .prettierrc)
-- [ ] T006 Create directory structure per plan.md: src/{main,ui,shared,export} with subdirectories
-- [ ] T007 Configure TypeScript strict mode in tsconfig.json for main and UI contexts
-- [ ] T008 Update manifest.json with plugin permissions (current page read, selection access, UI capabilities)
+- [x] T001 Initialize Figma plugin project using `npx create-figma-plugin` with TypeScript and React
+- [x] T002 [P] Configure package.json with dependencies: Figma Plugin DS, Tailwind CSS, jsPDF, Papa Parse
+- [x] T003 [P] Setup Tailwind CSS configuration in tailwind.config.js with Figma Plugin DS token mapping
+- [x] T004 [P] Configure Vite build for dual-context plugin in vite.config.ts
+- [x] T005 [P] Setup ESLint and Prettier configuration files (.eslintrc.js, .prettierrc)
+- [x] T006 Create directory structure per plan.md: src/{main,ui,shared,export} with subdirectories
+- [x] T007 Configure TypeScript strict mode in tsconfig.json for main and UI contexts
+- [x] T008 Update manifest.json with plugin permissions (current page read, selection access, UI capabilities)
 
 ---
 
