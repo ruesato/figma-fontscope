@@ -58,23 +58,23 @@
 
 ### Type System & Entities
 
-- [ ] T017 [P] Define core entities in src/shared/types.ts - Add TextLayer, TextStyle, DesignToken, LibrarySource, AuditResult types based on data-model.md. Include state enums (AuditState, ReplacementState)
-- [ ] T018 [P] Define message protocol types in src/shared/types.ts - Add new UIToMainMessage union members (RUN_AUDIT, CANCEL_AUDIT, REPLACE_STYLE, REPLACE_TOKEN, EXPORT_PDF, EXPORT_CSV) and MainToUIMessage members (AUDIT_STARTED, AUDIT_PROGRESS, AUDIT_COMPLETE, AUDIT_ERROR, AUDIT_INVALIDATED, REPLACEMENT_STARTED, etc.)
+- [x] T017 [P] Define core entities in src/shared/types.ts - Add TextLayer, TextStyle, DesignToken, LibrarySource, AuditResult types based on data-model.md. Include state enums (AuditState, ReplacementState)
+- [x] T018 [P] Define message protocol types in src/shared/types.ts - Add new UIToMainMessage union members (RUN_AUDIT, CANCEL_AUDIT, REPLACE_STYLE, REPLACE_TOKEN, EXPORT_PDF, EXPORT_CSV) and MainToUIMessage members (AUDIT_STARTED, AUDIT_PROGRESS, AUDIT_COMPLETE, AUDIT_ERROR, AUDIT_INVALIDATED, REPLACEMENT_STARTED, etc.)
 
 ### State Management Setup
 
-- [ ] T019 Implement chosen state management solution - If Zustand: create src/ui/stores/auditStore.ts and src/ui/stores/replacementStore.ts. If custom hooks: enhance src/ui/hooks/useAuditState.ts with 7-state machine logic and create src/ui/hooks/useReplacementState.ts
-- [ ] T020 Create document change detection hook - Implement src/ui/hooks/useDocumentChange.ts using findings from R1 research. Listen to documentchange events or poll timestamp, emit invalidation events
+- [x] T019 Implement chosen state management solution - If Zustand: create src/ui/stores/auditStore.ts and src/ui/stores/replacementStore.ts. If custom hooks: enhance src/ui/hooks/useAuditState.ts with 7-state machine logic and create src/ui/hooks/useReplacementState.ts
+- [x] T020 Create document change detection hook - Implement src/ui/hooks/useDocumentChange.ts using findings from R1 research. Listen to documentchange events or poll timestamp, emit invalidation events
 
 ### Virtualization Setup
 
-- [ ] T021 Install and configure virtualization library - Based on T015 decision, add `@tanstack/react-virtual` or `react-window` to package.json. Create wrapper utility in src/ui/utils/virtualization.ts if needed for consistent API
+- [x] T021 Install and configure virtualization library - Based on T015 decision, add `@tanstack/react-virtual` or `react-window` to package.json. Create wrapper utility in src/ui/utils/virtualization.ts if needed for consistent API
 
 ### Base Components
 
-- [ ] T022 [P] Create ProgressIndicator component - Build src/ui/components/ProgressIndicator.tsx that displays state-specific messages (validating, scanning, processing, creating_checkpoint) with progress bar or spinner
-- [ ] T023 [P] Create ErrorDisplay component - Build src/ui/components/ErrorDisplay.tsx that shows error messages with Retry/Rollback/Dismiss actions based on error type
-- [ ] T024 [P] Create ConfirmationDialog base component - Build src/ui/components/ConfirmationDialog.tsx reusable modal for destructive operations with customizable title, message, and action buttons
+- [x] T022 [P] Create ProgressIndicator component - Build src/ui/components/ProgressIndicator.tsx that displays state-specific messages (validating, scanning, processing, creating_checkpoint) with progress bar or spinner
+- [x] T023 [P] Create ErrorDisplay component - Build src/ui/components/ErrorDisplay.tsx that shows error messages with Retry/Rollback/Dismiss actions based on error type
+- [x] T024 [P] Create ConfirmationDialog base component - Build src/ui/components/ConfirmationDialog.tsx reusable modal for destructive operations with customizable title, message, and action buttons
 
 ### Message Handler Refactoring
 
