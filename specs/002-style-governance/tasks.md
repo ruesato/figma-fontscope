@@ -78,8 +78,8 @@
 
 ### Message Handler Refactoring
 
-- [ ] T025 Refactor useMessageHandler hook - Update src/ui/hooks/useMessageHandler.ts to handle new message types from Phase 1 type definitions. Add handlers for AUDIT_INVALIDATED, REPLACEMENT_STARTED, REPLACEMENT_PROGRESS, etc.
-- [ ] T026 Refactor main code.ts message handler - Update src/main/code.ts to route new UI messages to appropriate engines (audit, replacement, export). Maintain existing plugin initialization logic
+- [x] T025 Refactor useMessageHandler hook - Update src/ui/hooks/useMessageHandler.ts to handle new message types from Phase 1 type definitions. Add handlers for AUDIT_INVALIDATED, REPLACEMENT_STARTED, REPLACEMENT_PROGRESS, etc.
+- [x] T026 Refactor main code.ts message handler - Update src/main/code.ts to route new UI messages to appropriate engines (audit, replacement, export). Maintain existing plugin initialization logic
 
 **Checkpoint**: Foundation ready - type system complete, state management configured, message protocol extended, base components available
 
