@@ -93,39 +93,39 @@
 
 ### Audit Engine Core
 
-- [ ] T027 [US1] Create AuditEngine state machine - Implement src/main/audit/auditEngine.ts with 7 states (idle, validating, scanning, processing, complete, error, cancelled). Include state transition methods and progress callbacks
-- [ ] T028 [US1] Create document validator - Implement src/main/audit/validator.ts that counts text layers and enforces size limits (warning at 5001, hard limit at 25001). Called during validating state
-- [ ] T029 [US1] Create page scanner - Implement src/main/audit/scanner.ts that traverses pages using existing src/main/utils/traversal.ts logic. Emits progress based on pages scanned. Called during scanning state
-- [ ] T030 [US1] Create metadata processor - Implement src/main/audit/processor.ts that extracts style metadata for each text layer. Resolves library names, builds hierarchy, categorizes layers. Called during processing state
+- [x] T027 [US1] Create AuditEngine state machine - Implement src/main/audit/auditEngine.ts with 7 states (idle, validating, scanning, processing, complete, error, cancelled). Include state transition methods and progress callbacks
+- [x] T028 [US1] Create document validator - Implement src/main/audit/validator.ts that counts text layers and enforces size limits (warning at 5001, hard limit at 25001). Called during validating state
+- [x] T029 [US1] Create page scanner - Implement src/main/audit/scanner.ts that traverses pages using existing src/main/utils/traversal.ts logic. Emits progress based on pages scanned. Called during scanning state
+- [x] T030 [US1] Create metadata processor - Implement src/main/audit/processor.ts that extracts style metadata for each text layer. Resolves library names, builds hierarchy, categorizes layers. Called during processing state
 
 ### Style Detection Enhancement
 
-- [ ] T031 [US1] Fix library name resolution in styleDetection.ts - Remove placeholder at src/main/utils/styleDetection.ts lines 54-57. Use Figma Plugin API to get library name from styleId. Document approach in code comments
-- [ ] T032 [US1] Enhance styleLibrary.ts for team libraries - Update src/main/utils/styleLibrary.ts to enumerate team libraries via `figma.teamLibrary.getAvailableLibraryVariablesAsync()` or equivalent. Build LibrarySource objects
-- [ ] T033 [US1] Implement unstyled text detection - Add function to src/main/utils/styleDetection.ts that identifies text layers with no style assigned. Returns categorized list for "Needs Styling" section
-- [ ] T033a [US1] Track page locations for unstyled layers - Update src/main/audit/processor.ts to include page information in unstyled layer records. Store as array of { layerId, textPreview, pageName, pageId, parentType } objects. Used by T036 NeedsStylingSection to display unstyled layers grouped by page
+- [x] T031 [US1] Fix library name resolution in styleDetection.ts - Remove placeholder at src/main/utils/styleDetection.ts lines 54-57. Use Figma Plugin API to get library name from styleId. Document approach in code comments
+- [x] T032 [US1] Enhance styleLibrary.ts for team libraries - Update src/main/utils/styleLibrary.ts to enumerate team libraries via `figma.teamLibrary.getAvailableLibraryVariablesAsync()` or equivalent. Build LibrarySource objects
+- [x] T033 [US1] Implement unstyled text detection - Add function to src/main/utils/styleDetection.ts that identifies text layers with no style assigned. Returns categorized list for "Needs Styling" section
+- [x] T033a [US1] Track page locations for unstyled layers - Update src/main/audit/processor.ts to include page information in unstyled layer records. Store as array of { layerId, textPreview, pageName, pageId, parentType } objects. Used by T036 NeedsStylingSection to display unstyled layers grouped by page
 
 ### Summary & Analytics
 
-- [ ] T034 [US1] Refactor summary.ts for style governance - Update src/main/utils/summary.ts to calculate: style adoption rate, library usage distribution, top 10 styles, unstyled count. Remove font-specific metrics
-- [ ] T034a [US1] Implement parent-child hierarchy detection - Add function to src/main/utils/summary.ts that parses style names by forward-slash separators (e.g., "Typography/Heading/H1"). Build parent-child relationship map where "Typography" is parent of "Typography/Heading" which is parent of "Typography/Heading/H1". Store hierarchy structure in AuditResult.styleHierarchy for tree rendering
+- [x] T034 [US1] Refactor summary.ts for style governance - Update src/main/utils/summary.ts to calculate: style adoption rate, library usage distribution, top 10 styles, unstyled count. Remove font-specific metrics
+- [x] T034a [US1] Implement parent-child hierarchy detection - Add function to src/main/utils/summary.ts that parses style names by forward-slash separators (e.g., "Typography/Heading/H1"). Build parent-child relationship map where "Typography" is parent of "Typography/Heading" which is parent of "Typography/Heading/H1". Store hierarchy structure in AuditResult.styleHierarchy for tree rendering
 
 ### UI Components for Audit
 
-- [ ] T035 [US1] Build StyleTreeView component - Create src/ui/components/StyleTreeView.tsx with library→hierarchy grouping, expandable tree nodes, usage count badges, toggle for grouping mode. Integrate virtualization from T021
-- [ ] T036 [US1] Build NeedsStylingSect ion in StyleTreeView - Add "Needs Styling" section at peer level with library groups in StyleTreeView. Show count and expandable list of pages
-- [ ] T037 [US1] Refactor SummaryDashboard for styles - Update src/ui/components/SummaryDashboard.tsx to display style adoption metrics, library distribution chart, unstyled count. Remove font-specific UI
-- [ ] T038 [US1] Update AuditResults component - Refactor src/ui/components/AuditResults.tsx to use StyleTreeView instead of flat list. Add library/hierarchy toggle, pass audit data from state
+- [x] T035 [US1] Build StyleTreeView component - Create src/ui/components/StyleTreeView.tsx with library→hierarchy grouping, expandable tree nodes, usage count badges, toggle for grouping mode. Integrate virtualization from T021
+- [x] T036 [US1] Build NeedsStylingSect ion in StyleTreeView - Add "Needs Styling" section at peer level with library groups in StyleTreeView. Show count and expandable list of pages
+- [x] T037 [US1] Refactor SummaryDashboard for styles - Update src/ui/components/SummaryDashboard.tsx to display style adoption metrics, library distribution chart, unstyled count. Remove font-specific UI
+- [x] T038 [US1] Update AuditResults component - Refactor src/ui/components/AuditResults.tsx to use StyleTreeView instead of flat list. Add library/hierarchy toggle, pass audit data from state
 
 ### Audit Orchestration
 
-- [ ] T039 [US1] Wire audit engine to message handler - Update src/main/code.ts RUN_AUDIT handler to instantiate AuditEngine, call runAudit(), emit progress messages (AUDIT_STARTED, AUDIT_PROGRESS, AUDIT_COMPLETE, AUDIT_ERROR)
-- [ ] T040 [US1] Implement cancel functionality - Add CANCEL_AUDIT handler in src/main/code.ts that calls AuditEngine.cancel(). Update UI to show cancel button during scanning/processing states
+- [x] T039 [US1] Wire audit engine to message handler - Update src/main/code.ts RUN_AUDIT handler to instantiate AuditEngine, call runAudit(), emit progress messages (AUDIT_STARTED, AUDIT_PROGRESS, AUDIT_COMPLETE, AUDIT_ERROR)
+- [x] T040 [US1] Implement cancel functionality - Add CANCEL_AUDIT handler in src/main/code.ts that calls AuditEngine.cancel(). Update UI to show cancel button during scanning/processing states
 
 ### Document Change Detection
 
-- [ ] T041 [US1] Implement document change invalidation - Wire useDocumentChange hook (T020) to audit state. When change detected, set audit results as stale, show warning banner, enable "Re-run Audit" button
-- [ ] T042 [US1] Add warning banner component - Create src/ui/components/WarningBanner.tsx that displays "Document has been modified. Audit results may be outdated." with "Re-run Audit" CTA when results invalidated
+- [x] T041 [US1] Implement document change invalidation - Wire useDocumentChange hook (T020) to audit state. When change detected, set audit results as stale, show warning banner, enable "Re-run Audit" button
+- [x] T042 [US1] Add warning banner component - Create src/ui/components/WarningBanner.tsx that displays "Document has been modified. Audit results may be outdated." with "Re-run Audit" CTA when results invalidated
 
 **Checkpoint**: User Story 1 complete - Full audit capability with 7-state progression, document size validation, style tree view, unstyled text detection, and change invalidation
 
