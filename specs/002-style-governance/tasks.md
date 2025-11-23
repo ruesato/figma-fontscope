@@ -139,17 +139,17 @@
 
 ### Token Detection
 
-- [ ] T043 [P] [US3] Create tokenDetection.ts utility - Implement src/main/utils/tokenDetection.ts that uses Figma Variables API (R5 findings). Detect tokens via `boundVariables` on TextNode, resolve token metadata (name, value, type, collection, mode)
-- [ ] T044 [P] [US3] Extend AuditResult entity for tokens - Add `tokenInventory: DesignToken[]` field to AuditResult type in src/shared/types.ts. Include token usage tracking
-- [ ] T045 [US3] Integrate token detection into processor - Update src/main/audit/processor.ts to call tokenDetection.ts for each text layer. Build token inventory alongside style inventory
-- [ ] T046 [US3] Extend summary.ts for token metrics - Add token coverage calculation to src/main/utils/summary.ts: percentage of layers using tokens, token adoption by collection, mixed usage count
+- [x] T043 [P] [US3] Create tokenDetection.ts utility - Implement src/main/utils/tokenDetection.ts that uses Figma Variables API (R5 findings). Detect tokens via `boundVariables` on TextNode, resolve token metadata (name, value, type, collection, mode)
+- [x] T044 [P] [US3] Extend AuditResult entity for tokens - Add `tokenInventory: DesignToken[]` field to AuditResult type in src/shared/types.ts. Include token usage tracking
+- [x] T045 [US3] Integrate token detection into processor - Update src/main/audit/processor.ts to call tokenDetection.ts for each text layer. Build token inventory alongside style inventory
+- [x] T046 [US3] Extend summary.ts for token metrics - Add token coverage calculation to src/main/utils/summary.ts: percentage of layers using tokens, token adoption by collection, mixed usage count
 
 ### Token View UI
 
-- [ ] T047 [P] [US3] Build TokenView component - Create src/ui/components/TokenView.tsx with tokens grouped by collection, expandable tree showing usage counts, click to show detail panel
-- [ ] T048 [P] [US3] Build AnalyticsDashboard component - Create src/ui/components/AnalyticsDashboard.tsx that displays style adoption rate, token coverage %, library distribution, top 10 styles, unstyled count (FR-046 through FR-050)
-- [ ] T049 [US3] Add Tokens tab to App.tsx - Update src/ui/App.tsx navigation to include "Styles" and "Tokens" tabs. Route between StyleTreeView and TokenView components
-- [ ] T050 [US3] Add Analytics tab to App.tsx - Add "Analytics" tab to src/ui/App.tsx that displays AnalyticsDashboard component with metrics from audit result
+- [x] T047 [P] [US3] Build TokenView component - Create src/ui/components/TokenView.tsx with tokens grouped by collection, expandable tree showing usage counts, click to show detail panel
+- [x] T048 [P] [US3] Build AnalyticsDashboard component - Create src/ui/components/AnalyticsDashboard.tsx that displays style adoption rate, token coverage %, library distribution, top 10 styles, unstyled count (FR-046 through FR-050)
+- [x] T049 [US3] Add Tokens tab to App.tsx - Update src/ui/App.tsx navigation to include "Styles" and "Tokens" tabs. Route between StyleTreeView and TokenView components
+- [x] T050 [US3] Add Analytics tab to App.tsx - Add "Analytics" tab to src/ui/App.tsx that displays AnalyticsDashboard component with metrics from audit result
 
 **Checkpoint**: User Story 3 complete - Token detection operational, token view displays usage, analytics dashboard shows comprehensive metrics
 
@@ -244,7 +244,7 @@
 
 ### Token Replacement Orchestration
 
-- [ ] T079 [US4] Wire token replacement to message handler - Add REPLACE_TOKEN handler in src/main/code.ts that calls ReplacementEngine.replaceToken(), emits progress messages (reuse REPLACEMENT_* message types)
+- [ ] T079 [US4] Wire token replacement to message handler - Add REPLACE*TOKEN handler in src/main/code.ts that calls ReplacementEngine.replaceToken(), emits progress messages (reuse REPLACEMENT*\* message types)
 - [ ] T080 [US4] Test token replacement safety model - Verify that token replacement follows same checkpoint → batch → retry → rollback workflow as style replacement. Test with 100+ affected layers
 
 **Checkpoint**: User Story 4 complete - Token replacement operational with safety parity to style replacement
@@ -277,7 +277,7 @@
 
 - [ ] T088 [US5] Wire PDF export to message handler - Add EXPORT_PDF handler in src/main/code.ts that calls pdfGenerator.generatePDF() with audit result, creates blob URL, sends download link to UI via EXPORT_PDF_COMPLETE message
 - [ ] T089 [US5] Wire CSV export to message handler - Add EXPORT_CSV handler in src/main/code.ts that calls csvGenerator.generateCSV() with audit result, creates blob URL, sends download link to UI via EXPORT_CSV_COMPLETE message
-- [ ] T090 [US5] Implement file download in UI - Add download functionality in ExportPanel that receives blob URL from EXPORT_*_COMPLETE messages, creates anchor element, triggers download with appropriate filename (e.g., "style-audit-2025-11-20.pdf")
+- [ ] T090 [US5] Implement file download in UI - Add download functionality in ExportPanel that receives blob URL from EXPORT\_\*\_COMPLETE messages, creates anchor element, triggers download with appropriate filename (e.g., "style-audit-2025-11-20.pdf")
 
 ### Export Performance
 
@@ -442,17 +442,20 @@
 ### Using AI Agents Effectively
 
 **Research Phase (Week 1)**:
+
 - Launch all 7 research tasks in parallel to different agents
 - Consolidate findings yourself, make technology decisions
 - Generate documentation with agent assistance
 
 **Implementation Phases**:
+
 - Launch parallel tasks to multiple agents (marked [P])
 - Sequential tasks: complete dependencies first, then launch next task
 - Each task is scoped for 1-4 hours of agent time
 - Review agent output, iterate if needed, move to next task
 
 **Quality Gates**:
+
 - End of each Phase: Test user story independently before proceeding
 - Use checkpoints to validate: "Does US1 work on its own?"
 - Don't proceed to next phase if previous phase broken
@@ -498,6 +501,7 @@
 All paths relative to repository root: `/Users/ryanuesato/Documents/src/figma-fontscope/`
 
 **New files to create**:
+
 - `specs/002-style-governance/research.md`
 - `specs/002-style-governance/data-model.md`
 - `specs/002-style-governance/quickstart.md`
@@ -530,6 +534,7 @@ All paths relative to repository root: `/Users/ryanuesato/Documents/src/figma-fo
 - `src/export/formatters.ts`
 
 **Files to refactor**:
+
 - `src/main/code.ts` (message handler)
 - `src/main/utils/styleDetection.ts` (fix library resolution)
 - `src/main/utils/styleLibrary.ts` (team library enumeration)
@@ -545,4 +550,5 @@ All paths relative to repository root: `/Users/ryanuesato/Documents/src/figma-fo
 - `src/shared/types.ts` (new entities and messages)
 
 **Files to deprecate/remove**:
+
 - `src/main/utils/fontMetadata.ts` (font-specific logic removed in pivot)
