@@ -155,7 +155,7 @@
 
 ---
 
-## Phase 4: Detail Panel & Navigation (Week 5)
+## Phase 4: Detail Panel & Navigation (Week 5) ✅ COMPLETE
 
 **Goal**: Enable drill-down from tree to individual layer details with page/component grouping and canvas navigation
 
@@ -163,26 +163,26 @@
 
 ### Detail Panel Component
 
-- [ ] T051 [US1+US3] Build DetailPanel component - Create src/ui/components/DetailPanel.tsx that displays layers using selected style/token. Group by page → component. Use virtualization for large lists (500+ layers)
-- [ ] T052 [US1+US3] Implement click-to-navigate - Add layer click handler in DetailPanel that sends NAVIGATE_TO_LAYER message to main context. Use existing message handler support for navigation
-- [ ] T053 [US1+US3] Add visual status indicators - Create badge components in DetailPanel for fully-styled, partially-styled, unstyled status. Color-code for quick visual scanning
+- [x] T051 [US1+US3] Build DetailPanel component - Create src/ui/components/DetailPanel.tsx that displays layers using selected style/token. Group by page → component. Use virtualization for large lists (500+ layers)
+- [x] T052 [US1+US3] Implement click-to-navigate - Add layer click handler in DetailPanel that sends NAVIGATE_TO_LAYER message to main context. Use existing message handler support for navigation
+- [x] T053 [US1+US3] Add visual status indicators - Create badge components in DetailPanel for fully-styled, partially-styled, unstyled status. Color-code for quick visual scanning
 
 ### Search & Filter
 
-- [ ] T054 [P] [US1+US3] Build search functionality - Add search input to StyleTreeView and TokenView that filters tree nodes by name. Use native JavaScript filter (no library needed for <1000 styles)
-- [ ] T055 [P] [US1+US3] Build filter dropdowns - Add filter controls to StyleTreeView: by library (dropdown), by usage count (slider/dropdown: unused/rarely used/frequently used), by assignment status (checkboxes: fully/partially/unstyled)
-- [ ] T056 [US1+US3] Wire search/filter to tree - Connect search input and filter dropdowns to StyleTreeView and TokenView. Filter tree nodes based on criteria, maintain expand/collapse state
+- [x] T054 [P] [US1+US3] Build search functionality - Add search input to StyleTreeView and TokenView that filters tree nodes by name. Use native JavaScript filter (no library needed for <1000 styles)
+- [x] T055 [P] [US1+US3] Build filter dropdowns - Add filter controls to StyleTreeView: by library (dropdown), by usage count (slider/dropdown: unused/rarely used/frequently used), by assignment status (checkboxes: fully/partially/unstyled)
+- [x] T056 [US1+US3] Wire search/filter to tree - Connect search input and filter dropdowns to StyleTreeView and TokenView. Filter tree nodes based on criteria, maintain expand/collapse state
 
 ### Keyboard Navigation
 
-- [ ] T057 [US1+US3] Implement keyboard shortcuts - Add keyboard event handlers to StyleTreeView: Space=expand/collapse, Enter=select, Arrow keys=navigate tree. Ensure focus visible
-- [ ] T058 [US1+US3] Add keyboard shortcuts documentation - Add keyboard shortcut hints to UI (tooltip or help panel): "Space to expand, Enter to select, ↑↓ to navigate"
+- [x] T057 [US1+US3] Implement keyboard shortcuts - Add keyboard event handlers to StyleTreeView: Space=expand/collapse, Enter=select, Arrow keys=navigate tree. Ensure focus visible
+- [x] T058 [US1+US3] Add keyboard shortcuts documentation - Add keyboard shortcut hints to UI (tooltip or help panel): "Space to expand, Enter to select, ↑↓ to navigate"
 
-**Checkpoint**: Detail panel operational, full exploratory workflow functional (tree → detail → canvas), search/filter responsive
+**Checkpoint**: ✅ Detail panel operational, full exploratory workflow functional (tree → detail → canvas), search/filter responsive
 
 ---
 
-## Phase 5: User Story 2 (P2) - Migrate Styles Between Libraries (Weeks 6-7)
+## Phase 5: User Story 2 (P2) - Migrate Styles Between Libraries (Weeks 6-7) ✅ COMPLETE
 
 **Goal**: Enable bulk style replacement between libraries with safety guarantees (version checkpoints, adaptive batching, error recovery)
 
@@ -190,42 +190,42 @@
 
 ### Replacement Engine Core
 
-- [ ] T059 [US2] Create ReplacementEngine state machine - Implement src/main/replacement/replacementEngine.ts with 7 states (idle, validating, creating_checkpoint, processing, complete, error). No cancelled state per FR-041a
-- [ ] T060 [US2] Create checkpoint manager - Implement src/main/replacement/checkpoint.ts that wraps `figma.saveVersionHistoryAsync(title)` per R7 findings. Called during creating_checkpoint state
-- [ ] T061 [US2] Create batch processor with adaptive sizing - Implement src/main/replacement/batchProcessor.ts per R6 algorithm: start at 100 layers/batch, reduce to 25 on errors, increase back to 100 after 5 successes. Track state (batch size, consecutive successes, retry count)
-- [ ] T062 [US2] Create error recovery module - Implement src/main/replacement/errorRecovery.ts that classifies errors (transient, persistent, validation, partial) and implements retry with exponential backoff (1s, 2s, 4s per FR-041c)
+- [x] T059 [US2] Create ReplacementEngine state machine - Implement src/main/replacement/replacementEngine.ts with 7 states (idle, validating, creating_checkpoint, processing, complete, error). No cancelled state per FR-041a
+- [x] T060 [US2] Create checkpoint manager - Implement src/main/replacement/checkpoint.ts that wraps `figma.saveVersionHistoryAsync(title)` per R7 findings. Called during creating_checkpoint state
+- [x] T061 [US2] Create batch processor with adaptive sizing - Implement src/main/replacement/batchProcessor.ts per R6 algorithm: start at 100 layers/batch, reduce to 25 on errors, increase back to 100 after 5 successes. Track state (batch size, consecutive successes, retry count)
+- [x] T062 [US2] Create error recovery module - Implement src/main/replacement/errorRecovery.ts that classifies errors (transient, persistent, validation, partial) and implements retry with exponential backoff (1s, 2s, 4s per FR-041c)
 
 ### Validation & Safety
 
-- [ ] T063 [US2] Implement replacement validation - Add validation function in ReplacementEngine that checks: source ≠ target, source and target both exist, affected layer count > 0, user has edit permissions. Called during validating state
-- [ ] T064 [US2] Enhance retry.ts for replacement - Update src/main/utils/retry.ts to support exponential backoff timing (1s, 2s, 4s) and error classification. Used by errorRecovery.ts
+- [x] T063 [US2] Implement replacement validation - Add validation function in ReplacementEngine that checks: source ≠ target, source and target both exist, affected layer count > 0, user has edit permissions. Called during validating state
+- [x] T064 [US2] Enhance retry.ts for replacement - Update src/main/utils/retry.ts to support exponential backoff timing (1s, 2s, 4s) and error classification. Used by errorRecovery.ts
 
 ### Style Picker UI
 
-- [ ] T065 [P] [US2] Build StylePicker component - Create src/ui/components/StylePicker.tsx that displays all styles from all libraries in searchable/filterable list. Group by library. Allow single selection. Modal dialog format
-- [ ] T066 [P] [US2] Build replacement ConfirmationDialog - Enhance src/ui/components/ConfirmationDialog.tsx (from T024) for replacements. Show format: "Replace [Style A] from [Library X] with [Style B] from [Library Y] in [N] text layers?"
-- [ ] T067 [US2] Add "Replace" action to DetailPanel - Update src/ui/components/DetailPanel.tsx quick actions to include "Replace Style" button that opens StylePicker (T065) when style selected
+- [x] T065 [P] [US2] Build StylePicker component - Create src/ui/components/StylePicker.tsx that displays all styles from all libraries in searchable/filterable list. Group by library. Allow single selection. Modal dialog format
+- [x] T066 [P] [US2] Build replacement ConfirmationDialog - Enhance src/ui/components/ConfirmationDialog.tsx (from T024) for replacements. Show format: "Replace [Style A] from [Library X] with [Style B] from [Library Y] in [N] text layers?"
+- [x] T067 [US2] Add "Replace" action to DetailPanel - Update src/ui/components/DetailPanel.tsx quick actions to include "Replace Style" button that opens StylePicker (T065) when style selected
 
 ### Replacement Orchestration
 
-- [ ] T068 [US2] Wire ReplacementEngine to message handler - Add REPLACE_STYLE handler in src/main/code.ts that instantiates ReplacementEngine, calls replaceStyle(), emits progress messages (REPLACEMENT_STARTED, REPLACEMENT_PROGRESS, REPLACEMENT_CHECKPOINT_CREATED, REPLACEMENT_COMPLETE, REPLACEMENT_ERROR)
-- [ ] T069 [US2] Implement replacement progress tracking - Update ProgressIndicator component to handle replacement states. Show "Creating checkpoint...", "Replacing batch X of Y...", with progress bar
-- [ ] T070 [US2] Implement rollback confirmation - Add rollback dialog to ErrorDisplay component. When persistent error detected, show "Operation failed. Rollback to version checkpoint '[timestamp]'?" with Rollback/Keep Changes buttons. Send ROLLBACK_TO_CHECKPOINT message on Rollback
+- [x] T068 [US2] Wire ReplacementEngine to message handler - Add REPLACE_STYLE handler in src/main/code.ts that instantiates ReplacementEngine, calls replaceStyle(), emits progress messages (REPLACEMENT_STARTED, REPLACEMENT_PROGRESS, REPLACEMENT_CHECKPOINT_CREATED, REPLACEMENT_COMPLETE, REPLACEMENT_ERROR)
+- [x] T069 [US2] Implement replacement progress tracking - Update ProgressIndicator component to handle replacement states. Show "Creating checkpoint...", "Replacing batch X of Y...", with progress bar
+- [x] T070 [US2] Implement rollback confirmation - Add rollback dialog to ErrorDisplay component. When persistent error detected, show "Operation failed. Rollback to version checkpoint '[timestamp]'?" with Rollback/Keep Changes buttons. Send ROLLBACK_TO_CHECKPOINT message on Rollback
 
 ### Partial Failure Handling
 
-- [ ] T071 [US2] Implement partial failure reporting - Update ReplacementEngine to collect failed layer IDs during processing. On completion with failures, emit REPLACEMENT_COMPLETE_WITH_WARNINGS message including failed layer list and reasons
-- [ ] T072 [US2] Build partial failure summary UI - Add summary display in ErrorDisplay for partial failures: "Replacement completed with warnings: [X] of [Y] layers updated. [Z] layers failed: [reasons]. View failed layers?" with expand/collapse for details
+- [x] T071 [US2] Implement partial failure reporting - Update ReplacementEngine to collect failed layer IDs during processing. On completion with failures, emit REPLACEMENT_COMPLETE_WITH_WARNINGS message including failed layer list and reasons
+- [x] T072 [US2] Build partial failure summary UI - Add summary display in ErrorDisplay for partial failures: "Replacement completed with warnings: [X] of [Y] layers updated. [Z] layers failed: [reasons]. View failed layers?" with expand/collapse for details
 
 ### Post-Replacement Audit Invalidation
 
-- [ ] T073 [US2] Invalidate audit after replacement - When REPLACEMENT_COMPLETE received in useMessageHandler, mark audit results as stale, show warning banner, prompt user to re-run audit to see updated state
+- [x] T073 [US2] Invalidate audit after replacement - When REPLACEMENT_COMPLETE received in useMessageHandler, mark audit results as stale, show warning banner, prompt user to re-run audit to see updated state
 
-**Checkpoint**: User Story 2 complete - Style replacement fully functional with version checkpoints, adaptive batching, retry logic, rollback capability, partial failure handling
+**Checkpoint**: ✅ User Story 2 complete - Style replacement fully functional with version checkpoints, adaptive batching, retry logic, rollback capability, partial failure handling
 
 ---
 
-## Phase 6: User Story 4 (P4) - Replace Tokens Across Document (Week 8)
+## Phase 6: User Story 4 (P4) - Replace Tokens Across Document (Week 8) ✅ COMPLETE
 
 **Goal**: Enable bulk token replacement with same safety model as style replacement
 
@@ -233,21 +233,21 @@
 
 ### Token Replacement Extension
 
-- [ ] T074 [US4] Extend ReplacementEngine for tokens - Add replaceToken() method to src/main/replacement/replacementEngine.ts. Reuse existing state machine, checkpoint, batching, error recovery from Phase 5
-- [ ] T075 [US4] Implement token binding update - Create token replacement logic in ReplacementEngine that uses `setBoundVariable()` or equivalent Figma API per R5 findings. Update `boundVariables` on TextNode to new token ID
+- [x] T074 [US4] Extend ReplacementEngine for tokens - Add replaceToken() method to src/main/replacement/replacementEngine.ts. Reuse existing state machine, checkpoint, batching, error recovery from Phase 5
+- [x] T075 [US4] Implement token binding update - Create token replacement logic in ReplacementEngine that uses `setBoundVariable()` or equivalent Figma API per R5 findings. Update `boundVariables` on TextNode to new token ID
 
 ### Token Picker UI
 
-- [ ] T076 [P] [US4] Build TokenPicker component - Create src/ui/components/TokenPicker.tsx (adapt StylePicker from T065). Display all tokens grouped by collection. Filter by token type. Modal dialog format
-- [ ] T077 [P] [US4] Build token replacement ConfirmationDialog - Adapt ConfirmationDialog component for tokens. Show: "Replace token [Token A] with [Token B] in [N] text layers?" Include token values for clarity
-- [ ] T078 [US4] Add "Replace Token" action to DetailPanel - Update src/ui/components/DetailPanel.tsx to show "Replace Token" button when token selected in TokenView
+- [x] T076 [P] [US4] Build TokenPicker component - Create src/ui/components/TokenPicker.tsx (adapt StylePicker from T065). Display all tokens grouped by collection. Filter by token type. Modal dialog format
+- [x] T077 [P] [US4] Build token replacement ConfirmationDialog - Adapt ConfirmationDialog component for tokens. Show: "Replace token [Token A] with [Token B] in [N] text layers?" Include token values for clarity
+- [x] T078 [US4] Add "Replace Token" action to DetailPanel - Update src/ui/components/DetailPanel.tsx to show "Replace Token" button when token selected in TokenView
 
 ### Token Replacement Orchestration
 
-- [ ] T079 [US4] Wire token replacement to message handler - Add REPLACE*TOKEN handler in src/main/code.ts that calls ReplacementEngine.replaceToken(), emits progress messages (reuse REPLACEMENT*\* message types)
-- [ ] T080 [US4] Test token replacement safety model - Verify that token replacement follows same checkpoint → batch → retry → rollback workflow as style replacement. Test with 100+ affected layers
+- [x] T079 [US4] Wire token replacement to message handler - Add REPLACE*TOKEN handler in src/main/code.ts that calls ReplacementEngine.replaceToken(), emits progress messages (reuse REPLACEMENT*\* message types)
+- [x] T080 [US4] Test token replacement safety model - Verify that token replacement follows same checkpoint → batch → retry → rollback workflow as style replacement. Test with 100+ affected layers
 
-**Checkpoint**: User Story 4 complete - Token replacement operational with safety parity to style replacement
+**Checkpoint**: ✅ User Story 4 complete - Token replacement operational with safety parity to style replacement
 
 ---
 
