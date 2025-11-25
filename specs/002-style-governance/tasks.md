@@ -251,74 +251,7 @@
 
 ---
 
-## Phase 7: User Story 5 (P5) - Export Audit Report (Week 9)
-
-**Goal**: Generate PDF executive reports and CSV data exports for stakeholder communication and analysis
-
-**Independent Test**: Run audit, click "Export PDF", and verify: (1) PDF contains executive summary, style inventory, adoption visualizations, document metadata, (2) CSV contains one row per layer with all metadata, (3) both include audit timestamp
-
-### PDF Export
-
-- [ ] T081 [P] [US5] Create PDF generator - Implement src/export/pdfGenerator.ts using jsPDF per R4 findings. Generate multi-page PDF with sections: executive summary (metrics), style inventory (tables), adoption visualizations (charts or tables), document metadata
-- [ ] T082 [P] [US5] Implement PDF chart generation - Add chart generation to pdfGenerator.ts. Use jsPDF-autotable for tables, embed SVG for charts if needed. Include: style adoption chart, library distribution chart, top 10 styles
-- [ ] T083 [US5] Add document metadata to PDF - Include in PDF header/footer: document filename, total page count, total text layer count, audit timestamp, plugin version
-
-### CSV Export
-
-- [ ] T084 [P] [US5] Create CSV generator - Implement src/export/csvGenerator.ts using PapaParse. Generate CSV with columns: layer ID, layer name, text content preview, style name, style source, token name, token value, page name, component context, assignment status
-- [ ] T085 [US5] Add CSV metadata header - Include CSV header rows with document metadata before data rows: filename, audit timestamp, total layers, total styles, total tokens
-
-### Export UI
-
-- [ ] T086 [P] [US5] Build ExportPanel component - Create src/ui/components/ExportPanel.tsx with "Export PDF Report" and "Export CSV Data" buttons. Show file size estimates. Display success message with download link on completion
-- [ ] T087 [US5] Add Export section to App.tsx - Add "Export" section to AnalyticsDashboard or separate Export view in src/ui/App.tsx. Show ExportPanel component
-
-### Export Orchestration
-
-- [ ] T088 [US5] Wire PDF export to message handler - Add EXPORT_PDF handler in src/main/code.ts that calls pdfGenerator.generatePDF() with audit result, creates blob URL, sends download link to UI via EXPORT_PDF_COMPLETE message
-- [ ] T089 [US5] Wire CSV export to message handler - Add EXPORT_CSV handler in src/main/code.ts that calls csvGenerator.generateCSV() with audit result, creates blob URL, sends download link to UI via EXPORT_CSV_COMPLETE message
-- [ ] T090 [US5] Implement file download in UI - Add download functionality in ExportPanel that receives blob URL from EXPORT\_\*\_COMPLETE messages, creates anchor element, triggers download with appropriate filename (e.g., "style-audit-2025-11-20.pdf")
-
-### Export Performance
-
-- [ ] T091 [US5] Test export performance at scale - Verify PDF and CSV generation completes in <60 seconds for 25k layer audit results. Optimize formatters if needed. Test browser memory usage during generation
-
-**Checkpoint**: User Story 5 complete - Full export capability operational with PDF and CSV formats, suitable for stakeholder presentations
-
----
-
-## Phase 8: Performance Optimization (Week 10)
-
-**Goal**: Ensure Warning Zone (5k-25k layers) performance meets spec targets through virtualization and optimization
-
-**Independent Test**: Run audit on 5000-layer test document and verify: (1) tree view with 1000+ styles renders in <500ms, (2) detail panel with 5000+ layers scrolls at 60fps, (3) total memory usage <200MB, (4) audit completes in 2-10 minutes, (5) UI remains responsive
-
-### Virtualization Integration
-
-- [ ] T092 Create virtualized tree for StyleTreeView - Integrate virtualization library (from T021 decision) into src/ui/components/StyleTreeView.tsx. Only render visible tree nodes to reduce DOM size. Target: <500ms render for 1000+ styles
-- [ ] T093 Create virtualized list for DetailPanel - Integrate virtualization into src/ui/components/DetailPanel.tsx for layer lists. Support smooth scrolling with 5000+ layers at 60fps
-- [ ] T094 Create virtualized list for TokenView - Apply virtualization to src/ui/components/TokenView.tsx token tree using same approach as StyleTreeView
-
-### Progressive Loading
-
-- [ ] T095 Implement progressive batch rendering - Update AuditEngine processor to display results in batches of 100 styles. Load first batch immediately, render remaining batches in background with requestIdleCallback or setTimeout
-- [ ] T096 Reduce progress update frequency - Update src/main/audit/auditEngine.ts and replacementEngine.ts to emit progress updates every 50 layers (instead of every 10) for Warning Zone documents (>5000 layers)
-
-### Algorithm Optimization
-
-- [ ] T097 Optimize summary calculations - Update src/main/utils/summary.ts to use Map data structures for O(1) lookups instead of array iterations. Profile and optimize hot paths for 25k layer datasets
-- [ ] T098 Profile memory usage - Use browser DevTools to measure memory usage during 25k layer audit. Identify and fix memory leaks. Ensure total usage <200MB per spec requirement
-
-### Performance Testing
-
-- [ ] T099 Create 5k layer test document - Build test Figma document with 5000 text layers across multiple pages using mix of local and team library styles. Use for performance benchmarking
-- [ ] T100 Validate Warning Zone performance - Run audit on T099 test document. Measure: audit completion time (target: 2-10 min), tree render time (target: <500ms), memory usage (target: <200MB), UI responsiveness (no blocking >1s)
-
-**Checkpoint**: Warning Zone performance meets spec targets, virtualization operational, memory usage optimized
-
----
-
-## Phase 9: Polish & Edge Cases (Week 11)
+## Phase 7: Polish & Edge Cases (Week 9)
 
 **Goal**: Handle all edge cases from spec, add accessibility features, implement keyboard navigation, polish UX
 
@@ -365,6 +298,73 @@
 
 ---
 
+## Phase 8: Performance Optimization (Week 10)
+
+**Goal**: Ensure Warning Zone (5k-25k layers) performance meets spec targets through virtualization and optimization
+
+**Independent Test**: Run audit on 5000-layer test document and verify: (1) tree view with 1000+ styles renders in <500ms, (2) detail panel with 5000+ layers scrolls at 60fps, (3) total memory usage <200MB, (4) audit completes in 2-10 minutes, (5) UI remains responsive
+
+### Virtualization Integration
+
+- [ ] T123 Create virtualized tree for StyleTreeView - Integrate virtualization library (from T021 decision) into src/ui/components/StyleTreeView.tsx. Only render visible tree nodes to reduce DOM size. Target: <500ms render for 1000+ styles
+- [ ] T124 Create virtualized list for DetailPanel - Integrate virtualization into src/ui/components/DetailPanel.tsx for layer lists. Support smooth scrolling with 5000+ layers at 60fps
+- [ ] T125 Create virtualized list for TokenView - Apply virtualization to src/ui/components/TokenView.tsx token tree using same approach as StyleTreeView
+
+### Progressive Loading
+
+- [ ] T126 Implement progressive batch rendering - Update AuditEngine processor to display results in batches of 100 styles. Load first batch immediately, render remaining batches in background with requestIdleCallback or setTimeout
+- [ ] T127 Reduce progress update frequency - Update src/main/audit/auditEngine.ts and replacementEngine.ts to emit progress updates every 50 layers (instead of every 10) for Warning Zone documents (>5000 layers)
+
+### Algorithm Optimization
+
+- [ ] T128 Optimize summary calculations - Update src/main/utils/summary.ts to use Map data structures for O(1) lookups instead of array iterations. Profile and optimize hot paths for 25k layer datasets
+- [ ] T129 Profile memory usage - Use browser DevTools to measure memory usage during 25k layer audit. Identify and fix memory leaks. Ensure total usage <200MB per spec requirement
+
+### Performance Testing
+
+- [ ] T130 Create 5k layer test document - Build test Figma document with 5000 text layers across multiple pages using mix of local and team library styles. Use for performance benchmarking
+- [ ] T131 Validate Warning Zone performance - Run audit on T130 test document. Measure: audit completion time (target: 2-10 min), tree render time (target: <500ms), memory usage (target: <200MB), UI responsiveness (no blocking >1s)
+
+**Checkpoint**: Warning Zone performance meets spec targets, virtualization operational, memory usage optimized
+
+---
+
+## Phase 9: User Story 5 (P5) - Export Audit Report (Week 11)
+
+**Goal**: Generate PDF executive reports and CSV data exports for stakeholder communication and analysis
+
+**Independent Test**: Run audit, click "Export PDF", and verify: (1) PDF contains executive summary, style inventory, adoption visualizations, document metadata, (2) CSV contains one row per layer with all metadata, (3) both include audit timestamp
+
+### PDF Export
+
+- [ ] T132 [P] [US5] Create PDF generator - Implement src/export/pdfGenerator.ts using jsPDF per R4 findings. Generate multi-page PDF with sections: executive summary (metrics), style inventory (tables), adoption visualizations (charts or tables), document metadata
+- [ ] T133 [P] [US5] Implement PDF chart generation - Add chart generation to pdfGenerator.ts. Use jsPDF-autotable for tables, embed SVG for charts if needed. Include: style adoption chart, library distribution chart, top 10 styles
+- [ ] T134 [US5] Add document metadata to PDF - Include in PDF header/footer: document filename, total page count, total text layer count, audit timestamp, plugin version
+
+### CSV Export
+
+- [ ] T135 [P] [US5] Create CSV generator - Implement src/export/csvGenerator.ts using PapaParse. Generate CSV with columns: layer ID, layer name, text content preview, style name, style source, token name, token value, page name, component context, assignment status
+- [ ] T136 [US5] Add CSV metadata header - Include CSV header rows with document metadata before data rows: filename, audit timestamp, total layers, total styles, total tokens
+
+### Export UI
+
+- [ ] T137 [P] [US5] Build ExportPanel component - Create src/ui/components/ExportPanel.tsx with "Export PDF Report" and "Export CSV Data" buttons. Show file size estimates. Display success message with download link on completion
+- [ ] T138 [US5] Add Export section to App.tsx - Add "Export" section to AnalyticsDashboard or separate Export view in src/ui/App.tsx. Show ExportPanel component
+
+### Export Orchestration
+
+- [ ] T139 [US5] Wire PDF export to message handler - Add EXPORT_PDF handler in src/main/code.ts that calls pdfGenerator.generatePDF() with audit result, creates blob URL, sends download link to UI via EXPORT_PDF_COMPLETE message
+- [ ] T140 [US5] Wire CSV export to message handler - Add EXPORT_CSV handler in src/main/code.ts that calls csvGenerator.generateCSV() with audit result, creates blob URL, sends download link to UI via EXPORT_CSV_COMPLETE message
+- [ ] T141 [US5] Implement file download in UI - Add download functionality in ExportPanel that receives blob URL from EXPORT\_\*\_COMPLETE messages, creates anchor element, triggers download with appropriate filename (e.g., "style-audit-2025-11-20.pdf")
+
+### Export Performance
+
+- [ ] T142 [US5] Test export performance at scale - Verify PDF and CSV generation completes in <60 seconds for 25k layer audit results. Optimize formatters if needed. Test browser memory usage during generation
+
+**Checkpoint**: User Story 5 complete - Full export capability operational with PDF and CSV formats, suitable for stakeholder presentations
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -376,9 +376,9 @@
 5. **Phase 4 (Detail & Nav)**: Depends on Phase 2 AND Phase 3 completion (needs both style and token views)
 6. **Phase 5 (US2)**: Depends on Phase 1 completion - Can start after Foundational, but benefits from Phase 4 detail panel
 7. **Phase 6 (US4)**: Depends on Phase 5 completion (reuses ReplacementEngine)
-8. **Phase 7 (US5)**: Depends on Phase 3 completion (needs analytics data) - Can proceed in parallel with Phase 5/6
+8. **Phase 7 (Polish & Edge Cases)**: Depends on Phase 2-6 completion (final quality pass)
 9. **Phase 8 (Performance)**: Depends on Phase 2-7 completion (optimizes all features)
-10. **Phase 9 (Polish)**: Depends on Phase 2-8 completion (final quality pass)
+10. **Phase 9 (US5 - Export)**: Depends on Phase 3 completion (needs analytics data) - Can proceed in parallel with Phase 8
 
 ### User Story Independence
 
@@ -397,9 +397,9 @@
 **Week 5**: Phase 4 (Detail Panel) → Needs Phase 2 + Phase 3 complete
 **Weeks 6-7**: Phase 5 (US2 - Style Replace) → Independent, highest business value
 **Week 8**: Phase 6 (US4 - Token Replace) → Quick extension of Phase 5
-**Week 9**: Phase 7 (US5 - Export) → Can happen earlier if desired
+**Week 9**: Phase 7 (Polish & Edge Cases) → Final quality pass before optimization
 **Week 10**: Phase 8 (Performance) → Optimizes all previous work
-**Week 11**: Phase 9 (Polish) → Final quality pass
+**Week 11**: Phase 9 (US5 - Export) → Final feature added after all optimization complete
 
 ### Parallel Opportunities for AI Agents
 
@@ -410,8 +410,8 @@
 **Within Phase 2**: T035-T037 can run in parallel (UI components)
 **Within Phase 3**: T043-T044, T047-T048 can run in parallel
 **Within Phase 5**: T065-T066 can run in parallel (both UI components)
-**Within Phase 7**: T081-T082, T084-T085, T086 can run in parallel
-**Within Phase 9**: T101-T110 can ALL run in parallel (10 edge case handlers)
+**Within Phase 7**: T101-T110 can ALL run in parallel (10 edge case handlers)
+**Within Phase 9**: T132-T133, T135-T135, T137 can run in parallel
 
 ---
 
@@ -435,9 +435,9 @@
 4. **Week 5**: Phase 4 → Enhanced navigation → **Demo checkpoint**
 5. **Weeks 6-7**: Phase 5 → Style replacement (US2) → **MVP LAUNCH**
 6. **Week 8**: Phase 6 → Token replacement (US4) → **v1.1 release**
-7. **Week 9**: Phase 7 → Export reports (US5) → **v1.2 release**
+7. **Week 9**: Phase 7 → Polish + edge cases → **v1.2 release**
 8. **Week 10**: Phase 8 → Performance for large docs → **v1.3 release**
-9. **Week 11**: Phase 9 → Polish + edge cases → **v1.0 final**
+9. **Week 11**: Phase 9 → Export reports (US5) → **v1.0 final**
 
 ### Using AI Agents Effectively
 
@@ -464,7 +464,7 @@
 
 ## Task Summary
 
-- **Total Tasks**: 124
+- **Total Tasks**: 142
 - **Research Tasks**: 16 (Phase 0)
 - **Foundational Tasks**: 10 (Phase 1)
 - **User Story 1 (P1)**: 18 tasks (Phase 2)
@@ -472,12 +472,12 @@
 - **Detail & Navigation**: 8 tasks (Phase 4)
 - **User Story 2 (P2)**: 15 tasks (Phase 5)
 - **User Story 4 (P4)**: 7 tasks (Phase 6)
-- **User Story 5 (P5)**: 11 tasks (Phase 7)
+- **Polish & Edge Cases**: 22 tasks (Phase 7)
 - **Performance**: 9 tasks (Phase 8)
-- **Polish**: 22 tasks (Phase 9)
+- **User Story 5 (P5)**: 11 tasks (Phase 9)
 
 **MVP Scope** (Phases 0-1-2-5): 59 tasks = ~7 weeks
-**Full v1.0**: All 124 tasks = ~11 weeks
+**Full v1.0**: All 142 tasks = ~11 weeks
 
 ---
 
