@@ -26,7 +26,7 @@
 - [x] T001 [P] [R1] Research document change detection - Test `figma.on('documentchange')` event reliability in collaborative editing. Compare with `figma.root.lastModified` timestamp approach. Document findings in specs/002-style-governance/research.md section "R1: Document Change Detection"
 - [x] T002 [P] [R2] Evaluate state management options - Prototype 7-state machine in Zustand vs custom hooks. Measure bundle size impact. Document decision in specs/002-style-governance/research.md section "R2: State Management"
 - [x] T003 [P] [R3] Evaluate virtualization libraries - Test `@tanstack/react-virtual` vs `react-window` with 1000+ tree nodes. Benchmark expand/collapse performance. Document recommendation in specs/002-style-governance/research.md section "R3: Virtualization"
-- [x] T004 [P] [R4] Test jsPDF capabilities - Evaluate jsPDF autotable plugin for reports. Test SVG chart embedding. Verify PDF file size <5MB for 25k layers. Document findings in specs/002-style-governance/research.md section "R4: PDF Generation"
+- [x] T004 [P] [R4] Test jsPDF capabilities - Evaluate jsPDF autotable plugin for reports. Test SVG chart embedding. Verify PDF file size <5MB for 50k layers. Document findings in specs/002-style-governance/research.md section "R4: PDF Generation"
 - [x] T005 [P] [R5] Document Figma Variables API - Test `figma.variables.getLocalVariables()`, token binding detection via `boundVariables`, mode information. Create code examples in specs/002-style-governance/quickstart.md section "Token Detection API"
 - [x] T006 [P] [R6] Design adaptive batching algorithm - Define batch processor state machine (track size, consecutive success count, retry count). Document algorithm in specs/002-style-governance/research.md section "R6: Adaptive Batching"
 - [x] T007 [P] [R7] Test version history checkpoint API - Verify `figma.saveVersionHistoryAsync(title)` creates checkpoints. Test rollback workflow. Document in specs/002-style-governance/quickstart.md section "Version History API"
@@ -300,32 +300,32 @@
 
 ## Phase 8: Performance Optimization (Week 10)
 
-**Goal**: Ensure Warning Zone (5k-25k layers) performance meets spec targets through virtualization and optimization
+**Goal**: Ensure Enterprise Zone (10k-50k layers) performance meets spec targets through virtualization and optimization
 
-**Independent Test**: Run audit on 5000-layer test document and verify: (1) tree view with 1000+ styles renders in <500ms, (2) detail panel with 5000+ layers scrolls at 60fps, (3) total memory usage <200MB, (4) audit completes in 2-10 minutes, (5) UI remains responsive
+**Independent Test**: Run audit on 10000-layer test document and verify: (1) tree view with 1000+ styles renders in <500ms, (2) detail panel with 10000+ layers scrolls at 60fps, (3) total memory usage <400MB for 50k, (4) audit completes in ~60s for 5k/~2-3min for 10k/~5-8min for 25k/~10-15min for 50k, (5) UI remains responsive
 
 ### Virtualization Integration
 
 - [ ] T123 Create virtualized tree for StyleTreeView - Integrate virtualization library (from T021 decision) into src/ui/components/StyleTreeView.tsx. Only render visible tree nodes to reduce DOM size. Target: <500ms render for 1000+ styles
-- [ ] T124 Create virtualized list for DetailPanel - Integrate virtualization into src/ui/components/DetailPanel.tsx for layer lists. Support smooth scrolling with 5000+ layers at 60fps
+- [ ] T124 Create virtualized list for DetailPanel - Integrate virtualization into src/ui/components/DetailPanel.tsx for layer lists. Support smooth scrolling with 10000+ layers at 60fps
 - [ ] T125 Create virtualized list for TokenView - Apply virtualization to src/ui/components/TokenView.tsx token tree using same approach as StyleTreeView
 
 ### Progressive Loading
 
 - [ ] T126 Implement progressive batch rendering - Update AuditEngine processor to display results in batches of 100 styles. Load first batch immediately, render remaining batches in background with requestIdleCallback or setTimeout
-- [ ] T127 Reduce progress update frequency - Update src/main/audit/auditEngine.ts and replacementEngine.ts to emit progress updates every 50 layers (instead of every 10) for Warning Zone documents (>5000 layers)
+- [ ] T127 Reduce progress update frequency - Update src/main/audit/auditEngine.ts and replacementEngine.ts to emit progress updates every 50 layers (instead of every 10) for Enterprise Zone documents (>10000 layers)
 
 ### Algorithm Optimization
 
-- [ ] T128 Optimize summary calculations - Update src/main/utils/summary.ts to use Map data structures for O(1) lookups instead of array iterations. Profile and optimize hot paths for 25k layer datasets
-- [ ] T129 Profile memory usage - Use browser DevTools to measure memory usage during 25k layer audit. Identify and fix memory leaks. Ensure total usage <200MB per spec requirement
+- [ ] T128 Optimize summary calculations - Update src/main/utils/summary.ts to use Map data structures for O(1) lookups instead of array iterations. Profile and optimize hot paths for 50k layer datasets
+- [ ] T129 Profile memory usage - Use browser DevTools to measure memory usage during 50k layer audit. Identify and fix memory leaks. Ensure total usage <400MB for 50k documents per spec requirement
 
 ### Performance Testing
 
-- [ ] T130 Create 5k layer test document - Build test Figma document with 5000 text layers across multiple pages using mix of local and team library styles. Use for performance benchmarking
-- [ ] T131 Validate Warning Zone performance - Run audit on T130 test document. Measure: audit completion time (target: 2-10 min), tree render time (target: <500ms), memory usage (target: <200MB), UI responsiveness (no blocking >1s)
+- [ ] T130 Create enterprise-scale test document - Build test Figma documents with 10k and 50k text layers across multiple pages using mix of local and team library styles. Use for performance benchmarking
+- [ ] T131 Validate Enterprise Zone performance - Run audit on T130 test documents. Measure: audit completion time (target: ~60s for 5k, ~2-3min for 10k, ~5-8min for 25k, ~10-15min for 50k), tree render time (target: <500ms), memory usage (target: <200MB for 25k, <400MB for 50k), UI responsiveness (no blocking >1s)
 
-**Checkpoint**: Warning Zone performance meets spec targets, virtualization operational, memory usage optimized
+**Checkpoint**: Enterprise Zone performance meets spec targets, virtualization operational, memory usage optimized
 
 ---
 
@@ -359,7 +359,7 @@
 
 ### Export Performance
 
-- [ ] T142 [US5] Test export performance at scale - Verify PDF and CSV generation completes in <60 seconds for 25k layer audit results. Optimize formatters if needed. Test browser memory usage during generation
+- [ ] T142 [US5] Test export performance at scale - Verify PDF and CSV generation completes in <60 seconds for 25k layer audit results and <75 seconds for 50k layer audit results. Optimize formatters if needed. Test browser memory usage during generation
 
 **Checkpoint**: User Story 5 complete - Full export capability operational with PDF and CSV formats, suitable for stakeholder presentations
 

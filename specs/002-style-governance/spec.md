@@ -27,7 +27,7 @@ This represents a complete pivot from font-specific auditing to design system go
 - Q: How should bulk replacement operations handle Figma API constraints and batching? → A: Adaptive batching - start at 100 layers/batch, reduce to 25 on errors, increase back to 100 on success
 - Q: How should the system recover from mid-operation failures? → A: Auto-retry transient failures (network, timeout) 3x with exponential backoff, then rollback to version checkpoint on persistent failure
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Complete Style Audit of Document (Priority: P1)
 
@@ -130,7 +130,7 @@ Alex needs to generate a comprehensive PDF report of style adoption metrics to p
 - **What happens when the document changes during an audit?** Invalidate the audit results, display a warning message "Document has been modified. Audit results may be outdated. Please re-run the audit.", and provide a clear "Re-run Audit" button
 - **What happens when the document changes during a replacement operation?** Complete the current replacement operation (protected by version history checkpoint), then invalidate any cached audit data and prompt user to re-audit to see updated state
 - **What happens in collaborative documents where another user makes changes?** Treat document modifications from any source (local user or collaborator) as triggering invalidation; system does not distinguish between change sources
-- **What happens when a document has exactly 5,000 or 25,000 text layers?** 5,000 layers triggers the warning (Warning Zone starts at 5,001), 25,000 layers is allowed (hard limit is >25,000, meaning 25,001+ blocked)
+- **What happens when a document has exactly 10,000 or 50,000 text layers?** 10,000 layers triggers the warning (Enterprise Zone starts at 10,001), 50,000 layers is allowed (hard limit is >50,000, meaning 50,001+ blocked)
 - **What happens if layer count changes between warning acceptance and audit start?** Re-validate layer count; if it now exceeds hard limit, block with error; if it dropped below warning threshold, proceed without warning
 
 ## Operation State Model
@@ -148,6 +148,7 @@ Audit operations follow a defined state machine to enable accurate progress indi
 7. **cancelled**: User cancelled operation; partial results discarded; returns to idle state
 
 **State Transitions**:
+
 - idle → validating (user clicks "Run Audit")
 - validating → scanning (validation passed)
 - validating → error (validation failed)
@@ -173,6 +174,7 @@ Style and token replacement operations follow a similar pattern with an addition
 7. **cancelled**: Not applicable - replacement operations cannot be cancelled once checkpoint is created (too risky)
 
 **State Transitions**:
+
 - idle → validating (user confirms replacement)
 - validating → creating_checkpoint (validation passed)
 - validating → error (validation failed - invalid source/target)
@@ -202,25 +204,35 @@ Each state maps to specific UI feedback:
 The system enforces tiered boundaries to balance usability with performance and reliability:
 
 **Optimal Performance Zone (0-1,000 text layers)**:
+
 - Target: Complete audit in under 30 seconds
 - Behavior: Normal operation with no warnings
 - Expected user experience: Instant results, smooth interactions
 
 **Acceptable Performance Zone (1,001-5,000 text layers)**:
-- Target: Complete audit in 30-90 seconds
+
+- Target: Complete audit in under 60 seconds
 - Behavior: Normal operation, audit may take longer but remains acceptable
 - Expected user experience: Noticeable wait time but predictable completion
 
-**Warning Zone (5,001-25,000 text layers)**:
-- Trigger: When document analysis detects >5,000 text layers
+**Standard Performance Zone (5,001-10,000 text layers)**:
+
+- Target: Complete audit in 2-3 minutes
+- Behavior: Normal operation with no warnings
+- Expected user experience: Extended wait time but acceptable for enterprise workflows
+
+**Enterprise Zone (10,001-50,000 text layers)**:
+
+- Trigger: When document analysis detects >10,000 text layers
 - Warning message displayed BEFORE audit starts: "This document contains [X] text layers. Audit may take several minutes and UI may become less responsive. Continue?"
 - User options: "Continue Audit" or "Cancel"
-- Expected audit time: 2-10 minutes depending on layer count
+- Expected audit time: 3-15 minutes depending on layer count (5-8 min for 25k, 10-15 min for 50k)
 - Expected user experience: Significant wait time, possible UI lag, progress indication critical
 
-**Hard Limit (>25,000 text layers)**:
-- Trigger: When document analysis detects >25,000 text layers
-- Error message: "This document contains [X] text layers, which exceeds the maximum supported limit of 25,000. Please reduce document scope or audit smaller sections separately."
+**Hard Limit (>50,000 text layers)**:
+
+- Trigger: When document analysis detects >50,000 text layers
+- Error message: "This document contains [X] text layers, which exceeds the maximum supported limit of 50,000. Please reduce document scope or audit smaller sections separately."
 - Behavior: Audit operation blocked, cannot proceed
 - Rationale: Beyond this threshold, browser memory constraints and Figma API performance make reliable operation impossible
 
@@ -228,14 +240,14 @@ The system enforces tiered boundaries to balance usability with performance and 
 
 As layer count increases, performance degrades in these areas:
 
-1. **Audit Duration**: Roughly linear with layer count (1000 layers ≈ 30s, 5000 layers ≈ 2.5min)
+1. **Audit Duration**: Roughly linear with layer count (1000 layers ≈ 30s, 5000 layers ≈ 60s, 25000 layers ≈ 5-8 min, 50000 layers ≈ 10-15 min)
 2. **Memory Usage**: Increases with layer count and cached audit data size
 3. **UI Responsiveness**: Tree view rendering slows with >500 unique styles; search/filter remain performant
 4. **Replacement Operations**: Duration scales linearly with affected layer count; UI updates may lag for >1000 layers
 
 ### Mitigation Strategies
 
-For documents in the Warning Zone (5k-25k layers):
+For documents in the Enterprise Zone (10k-50k layers):
 
 - **Progressive rendering**: Display audit results in batches to avoid blocking UI
 - **Virtualized lists**: Only render visible tree nodes to reduce DOM size
@@ -259,11 +271,13 @@ Bulk style and token replacements use adaptive batching to balance performance w
    - Increment by 25 layers per batch (25 → 50 → 75 → 100)
 
 **Performance Characteristics**:
+
 - **Optimal conditions**: ~100 layers/second (1000 layer replacement ≈ 10 seconds)
 - **After error recovery**: ~25 layers/second (1000 layer replacement ≈ 40 seconds)
 - **Progress accuracy**: Updated after each batch completes (every 1-4 seconds depending on batch size)
 
 **Error Handling**:
+
 - **Transient errors** (network timeout, temporary API unavailability): Retry current batch up to 3 times with exponential backoff (1s, 2s, 4s)
 - **Persistent errors** (permissions, invalid style ID): Fail entire operation, trigger rollback via version history
 - **Partial batch failures**: If individual layers within a batch fail, mark those layers as failed, continue with remaining batches, report failed layer IDs at completion
@@ -275,12 +289,14 @@ Bulk style and token replacements use adaptive batching to balance performance w
 Errors are classified into categories with specific recovery strategies:
 
 **Transient Errors** (automatically retried):
+
 - Network timeouts or connection interruptions
 - Temporary Figma API unavailability (5xx server errors)
 - Rate limiting responses (429 Too Many Requests)
 - Browser resource exhaustion (recoverable via retry with smaller batch)
 
 **Persistent Errors** (trigger rollback):
+
 - Permission denied (user lacks edit access to document)
 - Invalid style ID (source or target style deleted/inaccessible)
 - Invalid token ID (token deleted or collection disabled)
@@ -288,12 +304,14 @@ Errors are classified into categories with specific recovery strategies:
 - Document locked by another operation
 
 **Validation Errors** (prevent operation start):
+
 - Source and target style are identical
 - No text layers selected for replacement
 - Document exceeds hard limit (>25,000 layers)
 - Required libraries not enabled
 
 **Partial Failures** (mark and continue):
+
 - Individual layer locked or hidden
 - Component instance with broken main component reference
 - Mixed text styles in single layer (applies to first character's style)
@@ -350,7 +368,7 @@ Errors are classified into categories with specific recovery strategies:
 - **Data integrity**: 100% (no corrupted document states due to partial operations)
 - **Rollback success**: 100% (version history checkpoint always available when needed)
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -368,8 +386,8 @@ Errors are classified into categories with specific recovery strategies:
 - **FR-007c**: System MUST display a warning message when showing potentially stale audit data: "Document has been modified. Audit results may be outdated. Please re-run the audit."
 - **FR-007d**: System MUST provide a prominent "Re-run Audit" button when audit results are invalidated
 - **FR-007e**: System MUST detect total text layer count before starting audit (during validating state)
-- **FR-007f**: System MUST display warning dialog when layer count exceeds 5,000: "This document contains [X] text layers. Audit may take several minutes and UI may become less responsive. Continue?" with Continue/Cancel options
-- **FR-007g**: System MUST block audit operation when layer count exceeds 25,000 with error message: "This document contains [X] text layers, which exceeds the maximum supported limit of 25,000. Please reduce document scope or audit smaller sections separately."
+- **FR-007f**: System MUST display warning dialog when layer count exceeds 10,000: "This document contains [X] text layers. Audit may take several minutes and UI may become less responsive. Continue?" with Continue/Cancel options
+- **FR-007g**: System MUST block audit operation when layer count exceeds 50,000 with error message: "This document contains [X] text layers, which exceeds the maximum supported limit of 50,000. Please reduce document scope or audit smaller sections separately."
 - **FR-007h**: System MUST complete audit in under 30 seconds for documents with 0-1,000 text layers under typical hardware conditions
 
 #### Style Metadata & Metrics
@@ -465,7 +483,7 @@ Errors are classified into categories with specific recovery strategies:
 - **Audit Result**: Represents the complete output of a document scan; attributes include timestamp, document file name, total text layer count, total style count, total token count, style inventory, token inventory, analytics metrics, categorized text layers
 - **Library Source**: Represents the origin of a style; attributes include source type (local/team library), library name, library status (enabled/disabled), total styles from this source, usage statistics
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
@@ -480,7 +498,7 @@ Errors are classified into categories with specific recovery strategies:
 - **SC-009**: 90% of users successfully complete their first style replacement operation on first attempt without errors or confusion
 - **SC-010**: All bulk operations (audit, replacement) handle 500+ affected layers without timeout or performance degradation
 
-## Assumptions *(mandatory)*
+## Assumptions _(mandatory)_
 
 ### Scope Assumptions for MVP v1.0
 
@@ -507,7 +525,7 @@ Errors are classified into categories with specific recovery strategies:
 - **Style migration workflows**: Assumes users need to replace entire styles in bulk rather than individual layer-by-layer updates
 - **Token adoption varies**: Some organizations have high token adoption while others use direct values; feature must work regardless of token maturity level
 
-## Out of Scope *(mandatory)*
+## Out of Scope _(mandatory)_
 
 ### Explicitly Excluded from MVP v1.0
 
@@ -536,7 +554,7 @@ Errors are classified into categories with specific recovery strategies:
 - **Style property comparison granularity**: Partial style matching (e.g., only font-family matches but size differs) is detected but detailed property-level diff is not shown in MVP
 - **Undo granularity**: Version history checkpoint allows document-level rollback; individual layer-level undo of bulk operations not supported
 
-## Dependencies *(mandatory)*
+## Dependencies _(mandatory)_
 
 ### External Dependencies
 
@@ -555,7 +573,7 @@ Errors are classified into categories with specific recovery strategies:
 - **Assumes Standard Naming Conventions**: Hierarchical style organization detection works best with forward-slash separated naming (e.g., "Typography/Heading/H1")
 - **Library Organization Patterns**: Feature assumes styles are organized by library source with logical grouping
 
-## Risks & Mitigations *(optional)*
+## Risks & Mitigations _(optional)_
 
 ### Technical Risks
 

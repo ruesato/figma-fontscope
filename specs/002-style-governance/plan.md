@@ -8,7 +8,7 @@ This feature represents a **strategic pivot** from font-specific auditing to com
 
 **Core Capabilities**:
 
-- 7-state audit engine with document size validation (warning at 5k layers, hard limit at 25k)
+- 7-state audit engine with document size validation (warning at 10k layers, hard limit at 50k)
 - Style and token inventory with library source tracking
 - Cross-library style replacement with adaptive batching (100→25→100 layers/batch)
 - Error recovery with 3x retry + automatic rollback via version history
@@ -37,7 +37,7 @@ This feature represents a **strategic pivot** from font-specific auditing to com
 
 **Performance Goals**:
 
-- Audit completion: <30s for 1,000 layers, <90s for 5,000 layers, 2-10min for 5k-25k layers
+- Audit completion: <30s for 1,000 layers, <60s for 5,000 layers, ~2-3min for 10k layers, ~5-8min for 25k layers, ~10-15min for 50k layers
 - Replacement operations: ~100 layers/second optimal, ~25 layers/second degraded
 - UI responsiveness: <200ms for search/filter operations
 - Tree rendering: <500ms for 1,000+ styles with virtualization
@@ -45,8 +45,8 @@ This feature represents a **strategic pivot** from font-specific auditing to com
 **Constraints**:
 
 - ES2017 transpilation required (no nullish coalescing `??` or optional chaining `?.`)
-- Document size limits: Warning at 5,001 layers, hard limit at 25,000 layers
-- Browser memory constraints for large result sets (<200MB for 25k layer documents)
+- Document size limits: Warning at 10,001 layers, hard limit at 50,000 layers
+- Browser memory constraints for large result sets (<200MB for 25k layer documents, <400MB for 50k layer documents)
 - No file system access (all assets inlined in HTML via custom Vite plugin)
 - Figma API rate limiting considerations for bulk operations
 
@@ -80,11 +80,11 @@ _GATE: Must pass before Phase 0 research. Re-checked after Phase 1 design._
 **Evidence**:
 
 - Performance targets explicitly defined: FR-005 (<30s for 1,000 layers), FR-007h (reinforced)
-- Document size validation prevents overload (FR-007e/f/g: warning at 5k, hard limit at 25k)
+- Document size validation prevents overload (FR-007e/f/g: warning at 10k, hard limit at 50k)
 - Adaptive batching maintains responsiveness during replacements (FR-041b: 100→25 layers/batch)
-- Mitigation strategies defined for Warning Zone (virtualization, progressive rendering)
+- Mitigation strategies defined for Enterprise Zone (virtualization, progressive rendering)
 
-**Action Required**: Implement virtualized tree rendering for 5k-25k layer documents (Phase 8).
+**Action Required**: Implement virtualized tree rendering for 10k-50k layer documents (Phase 8).
 
 ### ✅ III. Figma API Fidelity
 
@@ -684,7 +684,7 @@ figma-fontscope/
 
 ### Phase 8: Performance Optimization (Week 10)
 
-**Goal**: Ensure Warning Zone (5k-25k layers) performance
+**Goal**: Ensure Enterprise Zone (10k-50k layers) performance
 
 **User Story Coverage**:
 
@@ -694,7 +694,7 @@ figma-fontscope/
 
 - Implement virtualized tree rendering (from spec mitigation strategies)
 - Progressive loading for large result sets
-- Optimize summary calculation for 25k+ data points
+- Optimize summary calculation for 50k+ data points
 - Memory profiling and optimization
 - Reduce real-time update frequency for large batches
 
@@ -705,7 +705,7 @@ figma-fontscope/
 3. Implement virtual scrolling in DetailPanel layer list
 4. Add progressive batch rendering (display first 100 styles, load rest in background)
 5. Optimize summary.ts algorithms (use Map for O(1) lookups)
-6. Profile memory usage with 25k layer test document
+6. Profile memory usage with 50k layer test document
 7. Implement reduced progress update frequency (50 layers vs 10)
 
 **Dependencies**: Phase 0 (R3), Phase 1-7 (all major features complete)
@@ -713,12 +713,12 @@ figma-fontscope/
 **Acceptance Criteria**:
 
 - ✅ Tree view with 1,000+ styles renders in <500ms
-- ✅ Detail panel with 5,000+ layers scrolls smoothly (60fps)
-- ✅ Total memory usage <200MB for 25k layer document
-- ✅ Audit completes 5k-25k layer documents in 2-10 minutes
-- ✅ UI remains responsive during Warning Zone audits
+- ✅ Detail panel with 10,000+ layers scrolls smoothly (60fps)
+- ✅ Total memory usage <200MB for 25k layer document, <400MB for 50k layer document
+- ✅ Audit completes in <60s for 5k, ~2-3min for 10k, ~5-8min for 25k, ~10-15min for 50k
+- ✅ UI remains responsive during Enterprise Zone audits
 
-**Exit Criteria**: Warning Zone (5k-25k layers) performance meets spec targets.
+**Exit Criteria**: Enterprise Zone (10k-50k layers) performance meets spec targets.
 
 ---
 
@@ -745,7 +745,7 @@ figma-fontscope/
 3. Create `src/export/formatters.ts` for data transformation
 4. Build `src/ui/components/ExportPanel.tsx` with PDF/CSV buttons
 5. Implement file download in iframe context (blob URLs, anchor click)
-6. Test export performance with large datasets (25k layer audit)
+6. Test export performance with large datasets (50k layer audit)
 
 **Dependencies**: Phase 0 (R4), Phase 2 (analytics dashboard data), Phase 8 (all features optimized)
 
@@ -756,7 +756,7 @@ figma-fontscope/
 - ✅ CSV exports all text layer metadata for analysis (Scenario 3)
 - ✅ CSV properly formatted for spreadsheet software (Scenario 4)
 - ✅ Both formats include audit timestamp
-- ✅ Export completes in <60 seconds for 25k layer documents
+- ✅ Export completes in <60 seconds for 25k layer documents, <75 seconds for 50k layer documents
 
 **Exit Criteria**: Full export functionality operational, reports suitable for stakeholder presentations.
 
@@ -801,8 +801,8 @@ figma-fontscope/
 
 - **Likelihood**: Low (hard limit prevents this)
 - **Impact**: Critical (browser crash, data loss)
-- **Mitigation**: Hard limit at 25k (FR-007g). Warning Zone virtualization (Phase 7) reduces DOM size.
-- **Contingency**: Lower hard limit to 20k if crashes occur during testing
+- **Mitigation**: Hard limit at 50k (FR-007g). Enterprise Zone virtualization (Phase 8) reduces DOM size.
+- **Contingency**: Lower hard limit to 40k if crashes occur during testing
 
 **Risk 4: Version history checkpoint API undocumented/unreliable**
 
