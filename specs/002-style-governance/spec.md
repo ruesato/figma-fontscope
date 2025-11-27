@@ -426,7 +426,7 @@ Errors are classified into categories with specific recovery strategies:
 
 - **FR-028**: System MUST provide a separate view/tab for design tokens distinct from the style view
 - **FR-029**: System MUST group tokens by collection in the token view
-- **FR-030**: System MUST display token coverage metrics showing percentage of text layers using tokens versus direct values
+- **FR-030**: System MUST display token coverage metrics (see Metrics Definitions) alongside token adoption metrics to provide complete visibility into token system health
 
 #### User Interface - Detail Panel
 
@@ -465,7 +465,7 @@ Errors are classified into categories with specific recovery strategies:
 
 - **FR-046**: System MUST display style adoption rate calculated as percentage of styled versus unstyled text layers
 - **FR-047**: System MUST display library usage distribution showing percentage of layers using each library source
-- **FR-048**: System MUST display token coverage percentage showing proportion of text layers using tokens
+- **FR-048**: System MUST display token coverage percentage showing what proportion of available design tokens are actively used in the document (see Metrics Definitions for distinction from token adoption)
 - **FR-049**: System MUST display top 10 most-used styles ranked by usage count
 - **FR-050**: System MUST display count of text layers in "Needs Styling" category
 
@@ -474,6 +474,83 @@ Errors are classified into categories with specific recovery strategies:
 - **FR-051**: System MUST generate PDF report containing: executive summary metrics, style inventory by library, adoption visualizations, timestamp, and document metadata
 - **FR-052**: System MUST generate CSV export containing one row per text layer with columns: layer ID, style name, style source, token name (if applicable), page name, component context, assignment status
 - **FR-053**: System MUST include document metadata in exports: file name, total page count, total text layer count, audit timestamp
+
+### Analytics Metrics Definitions
+
+The Analytics Dashboard displays several key metrics to provide visibility into design system health. Clear definitions are essential to avoid confusion between related but distinct metrics.
+
+#### Style Adoption Rate
+
+**Definition**: Percentage of text layers that are "fully-styled" (have an assigned style that matches all their text properties).
+
+**Formula**: (Fully-styled layers / Total text layers) × 100%
+
+**Example**: In a document with 100 text layers, if 75 layers are fully-styled, then Style Adoption Rate = 75%
+
+**What it indicates**:
+
+- Measures how well the document conforms to the style system
+- High adoption (80%+) indicates strong design system implementation
+- Low adoption (<50%) suggests many layers need styling or override content
+
+**Related metric**: Assignment Status Breakdown (fully-styled vs partially-styled vs unstyled) shows the detailed breakdown
+
+#### Token Coverage Rate
+
+**Definition**: Percentage of design tokens that are actively used in at least one text layer in the document.
+
+**Formula**: (Number of unique tokens used / Total number of tokens) × 100%
+
+**Example**: If your design system has 50 design tokens but only 30 are referenced by text layers, then Token Coverage = 60%
+
+**What it indicates**:
+
+- Identifies which tokens in your design system are actively utilized
+- High coverage (80%+) indicates tokens are well-integrated
+- Low coverage (<50%) suggests token system may have unused/orphaned tokens, or incomplete token adoption
+- Helps identify tokens available for consolidation or removal
+
+**Related metric**: Token Adoption Rate (shown separately) measures what % of layers USE tokens, which is different from coverage of which tokens are used
+
+**Key difference from Token Adoption**:
+
+- **Token Coverage** = "Of the tokens we have, how many are used?" (token-centric view)
+- **Token Adoption** = "Of the layers we have, how many use tokens?" (layer-centric view)
+
+#### Library Usage Distribution
+
+**Definition**: Percentage breakdown of text layers by library source (local styles vs each team library).
+
+**Formula**: (Layers using Library X / Total text layers) × 100% for each library
+
+**Example**: 60% from Local, 25% from Design System Library, 15% from Brand Library
+
+**What it indicates**:
+
+- Shows which sources contribute most to the document's styling
+- Imbalance may suggest incomplete library migration or adoption
+
+#### Top 10 Most-Used Styles
+
+**Definition**: Ranked list of the 10 styles with the highest usage count (most layers using them).
+
+**Ranked by**: Usage count (layers using that style)
+
+**What it indicates**:
+
+- Identifies core styles that are critical to the design system
+- High-usage styles should be carefully maintained (changes affect many layers)
+- Inverted pyramid pattern (few styles with high usage) indicates healthy consolidation
+
+#### Unstyled Layer Count
+
+**Definition**: Total number of text layers without any assigned style.
+
+**What it indicates**:
+
+- Identifies styling gaps
+- Every unstyled layer is a candidate for style assignment
+- Forms the "Needs Styling" section in the tree view
 
 ### Key Entities
 
