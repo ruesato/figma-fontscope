@@ -168,10 +168,20 @@ interface DesignToken {
 
 **Figma API Mapping**:
 
-- Source: `Variable` from `figma.variables.getLocalVariablesAsync()`
+- **Local tokens**: `Variable` from `figma.variables.getLocalVariablesAsync()`
+- **Library tokens**: `LibraryVariable` from `figma.teamLibrary.getVariablesInLibraryCollectionAsync()`
 - Binding: Detected via `TextNode.boundVariables`
-- Collection: From `figma.variables.getVariableCollectionByIdAsync()`
+- Collection: From `figma.variables.getVariableCollectionByIdAsync()` (local) or `figma.teamLibrary.getAvailableLibraryVariableCollectionsAsync()` (library)
 - Mode: From collection's current mode
+
+**Known Limitation - Library Variable Values**:
+
+Team library variables have limited metadata via the Plugin API:
+
+- ✅ Available: `name`, `key`, `resolvedType` (type information)
+- ❌ Not Available: `currentValue`, `valuesByMode` (actual token values)
+
+This is a Figma Plugin API constraint. Library variables are included in Token Coverage metrics and usage detection, but their values display as empty/placeholder in the UI. See implementation notes in `src/main/utils/tokenDetection.ts` lines 209-230.
 
 **Relationships**:
 

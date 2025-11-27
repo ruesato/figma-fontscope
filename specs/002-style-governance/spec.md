@@ -503,6 +503,13 @@ The Analytics Dashboard displays several key metrics to provide visibility into 
 
 **Example**: If your design system has 50 design tokens but only 30 are referenced by text layers, then Token Coverage = 60%
 
+**Scope (Important)**: Token Coverage includes tokens from **both local and team library sources**. The "total number of tokens" includes:
+
+- All local document variables (from `figma.variables.getLocalVariablesAsync()`)
+- All linked team library variables (from `figma.teamLibrary.getAvailableLibraryVariableCollectionsAsync()`)
+
+This ensures complete visibility into token system health across the entire design system, not just local document tokens.
+
 **What it indicates**:
 
 - Identifies which tokens in your design system are actively utilized
@@ -516,6 +523,8 @@ The Analytics Dashboard displays several key metrics to provide visibility into 
 
 - **Token Coverage** = "Of the tokens we have, how many are used?" (token-centric view)
 - **Token Adoption** = "Of the layers we have, how many use tokens?" (layer-centric view)
+
+**Known Limitation - Library Variable Values**: Team library variables are included in the token inventory but their current values are not available via the Figma Plugin API (library variables only expose name and type, not values). This is a Figma API constraint documented in `DEVELOPER_REFERENCE.md`. As a result, library tokens appear in token coverage metrics and usage counts but display as empty values in the UI. See FR-TODO v1.1 for potential investigation into workarounds.
 
 #### Library Usage Distribution
 
