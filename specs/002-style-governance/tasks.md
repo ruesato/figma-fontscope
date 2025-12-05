@@ -552,3 +552,99 @@ All paths relative to repository root: `/Users/ryanuesato/Documents/src/figma-fo
 **Files to deprecate/remove**:
 
 - `src/main/utils/fontMetadata.ts` (font-specific logic removed in pivot)
+
+---
+
+## Phase 10: Release Automation (Week 12)
+
+**Goal**: Automate the release process with GitHub Actions for consistent, repeatable plugin releases
+
+**Independent Test**: Push a tag (e.g., v1.0.1), trigger workflow, and verify: (1) plugin builds successfully, (2) GitHub release created with correct version, (3) built artifact attached to release, (4) release notes generated from commits
+
+### Workflow Setup
+
+- [ ] T143 [P] [Release] Create GitHub Actions workflow file - Create `.github/workflows/release.yml` that triggers on tag push matching pattern `v*.*.*`. Workflow should check out code, install dependencies, build plugin, create GitHub release
+- [ ] T144 [P] [Release] Configure build step - Add build job to workflow that runs `pnpm install` and `pnpm build`. Cache node_modules for faster builds. Ensure build artifacts are preserved for release step
+- [ ] T145 [Release] Configure release creation step - Add step that uses `actions/create-release@v1` or `gh release create` to create GitHub release with tag name as version. Set release title to "Typescope vX.Y.Z"
+
+### Release Artifact Management
+
+- [ ] T146 [Release] Add artifact upload - Configure workflow to upload `build/main.js` as release asset. Name it appropriately (e.g., `typescope-vX.Y.Z.js` or keep as `main.js`)
+- [ ] T147 [Release] Add manifest.json to release - Upload `manifest.json` as release asset for reference. Users can verify plugin ID and permissions
+
+### Release Notes Automation
+
+- [ ] T148 [P] [Release] Configure automated release notes - Use GitHub's automatic release notes generation or add step to generate from commit history since last tag. Parse semantic commit messages (feat:, fix:, chore:) to create categorized changelog
+- [ ] T149 [P] [Release] Add version consistency check - Add workflow step that validates package.json version matches git tag version. Fail build if versions don't match to prevent incorrect releases
+
+### Documentation
+
+- [ ] T150 [Release] Create RELEASING.md guide - Document the release process in `RELEASING.md`: (1) update version in package.json and manifest.json, (2) commit changes, (3) create and push tag, (4) monitor GitHub Actions workflow, (5) verify release created
+- [ ] T151 [Release] Update README with release badge - Add GitHub Actions workflow status badge to README.md showing build/release status. Add section explaining release versioning scheme (semantic versioning)
+
+### Testing & Validation
+
+- [ ] T152 [Release] Test workflow on feature branch - Create test tag on feature branch (e.g., v0.0.1-test) to validate workflow runs successfully without affecting main releases. Remove test release after validation
+- [ ] T153 [Release] Create release checklist - Add release checklist to RELEASING.md: run tests, verify build locally, check version numbers, review changelog, test in Figma, create tag, monitor workflow, verify release artifacts
+
+**Checkpoint**: Release automation complete - pushing tags automatically creates GitHub releases with built artifacts and generated release notes
+
+---
+
+## Phase 10 Task Summary
+
+- **Total Tasks**: 11
+- **Workflow Setup**: 3 tasks (T143-T145)
+- **Artifact Management**: 2 tasks (T146-T147)
+- **Release Notes**: 2 tasks (T148-T149)
+- **Documentation**: 2 tasks (T150-T151)
+- **Testing**: 2 tasks (T152-T153)
+
+**Dependencies**: Phase 10 can run independently after Phase 1 (Foundational) is complete. No feature dependencies.
+
+**Estimated Time**: ~4-6 hours for initial setup and testing
+
+---
+
+## Updated Dependencies & Execution Order
+
+### Phase Dependencies (Updated)
+
+1. **Phase 0 (Research & Setup)**: No dependencies - MUST complete first
+2. **Phase 1 (Foundational)**: Depends on Phase 0 completion - BLOCKS all user stories
+3. **Phase 2 (US1)**: Depends on Phase 1 completion - Can proceed independently
+4. **Phase 3 (US3)**: Depends on Phase 1 completion - Can proceed in parallel with Phase 2
+5. **Phase 4 (Detail & Nav)**: Depends on Phase 2 AND Phase 3 completion (needs both style and token views)
+6. **Phase 5 (US2)**: Depends on Phase 1 completion - Can start after Foundational, but benefits from Phase 4 detail panel
+7. **Phase 6 (US4)**: Depends on Phase 5 completion (reuses ReplacementEngine)
+8. **Phase 7 (Polish & Edge Cases)**: Depends on Phase 2-6 completion (final quality pass)
+9. **Phase 8 (Performance)**: Depends on Phase 2-7 completion (optimizes all features)
+10. **Phase 9 (US5 - Export)**: Depends on Phase 3 completion (needs analytics data) - Can proceed in parallel with Phase 8
+11. **Phase 10 (Release Automation)**: Depends on Phase 1 completion - Can run independently anytime after foundational infrastructure is ready
+
+### Updated Task Summary
+
+- **Total Tasks**: 153 (was 142)
+- **Research Tasks**: 16 (Phase 0)
+- **Foundational Tasks**: 10 (Phase 1)
+- **User Story 1 (P1)**: 18 tasks (Phase 2)
+- **User Story 3 (P3)**: 8 tasks (Phase 3)
+- **Detail & Navigation**: 8 tasks (Phase 4)
+- **User Story 2 (P2)**: 15 tasks (Phase 5)
+- **User Story 4 (P4)**: 7 tasks (Phase 6)
+- **Polish & Edge Cases**: 22 tasks (Phase 7)
+- **Performance**: 9 tasks (Phase 8)
+- **User Story 5 (P5)**: 11 tasks (Phase 9)
+- **Release Automation**: 11 tasks (Phase 10)
+
+**MVP Scope** (Phases 0-1-2-5): 59 tasks = ~7 weeks
+**Full v1.0**: All 153 tasks = ~12 weeks
+
+---
+
+## Updated File Path Reference
+
+**New files to create** (Phase 10 additions):
+
+- `.github/workflows/release.yml`
+- `RELEASING.md`
